@@ -8,24 +8,16 @@ int split(char* dst[], const char* src, const char* delim, const char* quote){
     strcpy(dst[n],"");
     char* q=strchr(quote,*s);
     if(q && *q){
-      for(;;){//(*2)
+      for(;;){
         char* c=strchr(s+1,*s);
         strncat(dst[n],s+1,c-s-1);
         s=c+1;
-        if(*s==*q){
-          strncat(dst[n],s,1);
-        }else{
-          break;
-        }
+        if(*s==*q)strncat(dst[n],s,1);
+        else break;
       }
-      if(*s=='\0'){
-        break;
-      }
-      if(strchr(delim,*s)){
-        s++;
-      }else{
-        abort();
-      }
+      if(*s=='\0')break;
+      if(strchr(delim,*s))s++;
+      else abort();
     }else{
       char* c=strpbrk(s, delim);
       if(!c){
