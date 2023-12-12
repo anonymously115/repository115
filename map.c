@@ -1,19 +1,20 @@
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 #include "map.h"
 
 typedef struct NODE{
-	char* key; //ƒL[
-	void* value; //’l
-	struct NODE* child[2]; //child[0]:¶‚ÌŽq(ƒL[‚ªe‚æ‚è¬‚³‚¢)Achild[1]:‰E‚ÌŽq(ƒL[‚ªe‚æ‚è‘å‚«‚¢)
+	char* key; //ã‚­ãƒ¼
+	void* value; //å€¤
+	struct NODE* child[2]; //child[0]:å·¦ã®å­(ã‚­ãƒ¼ãŒè¦ªã‚ˆã‚Šå°ã•ã„)ã€child[1]:å³ã®å­(ã‚­ãƒ¼ãŒè¦ªã‚ˆã‚Šå¤§ãã„)
 }NODE;
 
 struct MAP{
-	NODE* root; //ªƒm[ƒh
+	NODE* root; //æ ¹ãƒŽãƒ¼ãƒ‰
 };
 
 /*
- * ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+ * ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
  */
 MAP newMap(){
 	MAP map=(MAP)malloc(sizeof(struct MAP));
@@ -30,7 +31,7 @@ int height(NODE* node){
 	}
 	int left=height(node->child[0]);
 	int right=height(node->child[1]);
-	return left>right?left:right;
+	return (left>right?left:right)+1;
 }
 
 int balance(NODE* node){
@@ -40,85 +41,93 @@ int balance(NODE* node){
 	return height(node->child[0])-height(node->child[1]);
 }
 
-void rotate(NODE** node, int flag){//¶‰ñ“]=0, ‰E‰ñ“]=1
+void rotate(NODE** node, int flag){//å·¦å›žè»¢=0, å³å›žè»¢=1
 	NODE* pivot=(*node)->child[1-flag];
 	(*node)->child[1-flag]=pivot->child[flag];
 	pivot->child[flag]=*node;
 	*node=pivot;
 }
 
-void take_balance(int depth, NODE* nodes[]){
+void take_balance(MAP map, int depth, NODE* nodes[], bool flag[]){
 	for(int i=depth-1;i>=0;i--){
 		int bal=balance(nodes[i]);
 		if(bal>1){
 			if(balance(nodes[i]->child[0])<0){
 				rotate(&(nodes[i]->child[0]),0);
 			}
-			rotate(&nodes[i],1);
+			if(i){
+				rotate(&(nodes[i-1]->child[flag[i-1]]),1);
+			}else{
+				rotate(&(map->root),1);
+			}
 		}else if(bal<-1){
 			if(balance(nodes[i]->child[1])>0){
 				rotate(&(nodes[i]->child[1]),1);
 			}
-			rotate(&nodes[i],0);
+			if(i){
+				rotate(&(nodes[i-1]->child[flag[i-1]]),0);
+			}else{
+				rotate(&(map->root),0);
+			}
 		}
 	}
 }
 
 void setValue(MAP map, const char* key, void* value){
 	NODE* nodes[64];
+	bool flag[64];
 	int depth=0;
 	nodes[depth]=map->root;
-	int flag=-1;
 	while(nodes[depth]){
 		int cmp=strcmp(key,nodes[depth]->key);
 		if(cmp==0){
-			//updateˆ—
+			//updateå‡¦ç†
 			nodes[depth]->value=value;
 			return;
 		}
-		flag=(cmp>0);
-		nodes[depth+1]=nodes[depth]->child[flag];//—¬Î‚Énodes[++depth]=nodes[depth]->child[flag]‚Í—–\‚·‚¬‚é
+		flag[depth]=(cmp>0);
+		nodes[depth+1]=nodes[depth]->child[flag[depth]];//æµçŸ³ã«nodes[++depth]=nodes[depth]->child[flag]ã¯ä¹±æš´ã™ãŽã‚‹
 		depth++;
 	}
 	
-	/* insertˆ— */
-	//ƒm[ƒh‚Ìƒƒ‚ƒŠ‚ðŠm•Û
+	/* insertå‡¦ç† */
+	//ãƒŽãƒ¼ãƒ‰ã®ãƒ¡ãƒ¢ãƒªã‚’ç¢ºä¿
 	NODE* node=(NODE*)malloc(sizeof(NODE));
 	if(!node){
 		abort();
 	}
 
-	//—–\‚È‰Šú‰»‚ð‚µ‚Ä‚Ý‚éikey‚àvalue‚àchild[i]ii=0,1j‚àNULLj
+	//ä¹±æš´ãªåˆæœŸåŒ–ã‚’ã—ã¦ã¿ã‚‹ï¼ˆkeyã‚‚valueã‚‚child[i]ï¼ˆi=0,1ï¼‰ã‚‚NULLï¼‰
 	memset(node,0,sizeof(NODE));
 
-	//ƒL[‚Ìƒƒ‚ƒŠŠm•Û
+	//ã‚­ãƒ¼ã®ãƒ¡ãƒ¢ãƒªç¢ºä¿
 	node->key=(char*)malloc(strlen(key)+1);
 	if(!node->key){
 		abort();
 	}
 
-	//ƒL[‚ðƒZƒbƒg
+	//ã‚­ãƒ¼ã‚’ã‚»ãƒƒãƒˆ
 	strcpy(node->key,key);
 
-	//’l‚ðƒZƒbƒg
+	//å€¤ã‚’ã‚»ãƒƒãƒˆ
 	node->value=value;
 
 	nodes[depth]=node;
 	if(depth){
-		nodes[depth-1]->child[flag]=node;
+		nodes[depth-1]->child[flag[depth-1]]=node;
 	}else{
 		map->root=node;
 	}
 
-	//ˆê‰žA‚±‚ê‚Å‘}“ü‚à‚µ‚­‚ÍXV‚Å‚«‚½‚Ì‚¾‚ªA‘}“ü‚Ìê‡AAVL–Ø‚Ìl‚¦•û‚ð—p‚¢‚Ä“ñ•ª’Tõ–Ø‚Ì•½t«‚ð•Û‚Â‚±‚Æ‚É‚·‚éB
-	//i‚»‚Ìˆ×‚ÉA`nodes`‚Éª‚©‚ç’H‚Á‚Ä‚¢‚Á‚½ƒm[ƒh‚ðŠi”[‚µ‚Ä‚¨‚¢‚½j
-	take_balance(depth, nodes);
+	//ä¸€å¿œã€ã“ã‚Œã§æŒ¿å…¥ã‚‚ã—ãã¯æ›´æ–°ã§ããŸã®ã ãŒã€æŒ¿å…¥ã®å ´åˆã€AVLæœ¨ã®è€ƒãˆæ–¹ã‚’ç”¨ã„ã¦äºŒåˆ†æŽ¢ç´¢æœ¨ã®å¹³è¡¡æ€§ã‚’ä¿ã¤ã“ã¨ã«ã™ã‚‹ã€‚
+	//ï¼ˆãã®ç‚ºã«ã€`nodes`ã«æ ¹ã‹ã‚‰è¾¿ã£ã¦ã„ã£ãŸãƒŽãƒ¼ãƒ‰ã‚’æ ¼ç´ã—ã¦ãŠã„ãŸï¼‰
+	take_balance(map, depth, nodes, flag);
 }
 
 /*
- * ’l‚ðŽæ“¾‚·‚é
- * map : ˜A‘z”z—ñ
- * key : ’TõƒL[
+ * å€¤ã‚’å–å¾—ã™ã‚‹
+ * map : é€£æƒ³é…åˆ—
+ * key : æŽ¢ç´¢ã‚­ãƒ¼
  */
 void* getValue(MAP map, const char* key){
 	NODE* node=map->root;
@@ -130,12 +139,12 @@ void* getValue(MAP map, const char* key){
 		node=node->child[cmp>0];
 	}
 
-	//ƒL[‚ª–³‚¯‚ê‚ÎNULL
+	//ã‚­ãƒ¼ãŒç„¡ã‘ã‚Œã°NULL
 	return NULL;
 }
 
 /*
- * ƒm[ƒh“à‚ÌƒL[E’l‚É‘Î‚µ‚Ä’Ê‚è‚ª‚¯‡i¶ËeË‰Ej‚Åˆ—
+ * ãƒŽãƒ¼ãƒ‰å†…ã®ã‚­ãƒ¼ãƒ»å€¤ã«å¯¾ã—ã¦é€šã‚ŠãŒã‘é †ï¼ˆå·¦â‡’è¦ªâ‡’å³ï¼‰ã§å‡¦ç†
  */
 void _foreach(void (*func)(const char* key, const void* value), NODE* node){
 	if(node){
@@ -150,65 +159,67 @@ void foreach(MAP map, void (*func)(const char* key, const void* value)){
 }
 
 /*
- * ˜A‘z”z—ñ“à‚ÌƒL[‚ðíœ
+ * é€£æƒ³é…åˆ—å†…ã®ã‚­ãƒ¼ã‚’å‰Šé™¤
  */
 void* erase(MAP map, const char* key){
 	NODE* nodes[64];
+	bool flag[64];
 	int depth=0;
 	nodes[depth]=map->root;
-	int flag=-1;
 	while(nodes[depth]){
 		int cmp=strcmp(key,nodes[depth]->key);
 		if(cmp){
-			flag=(cmp>0);
-			nodes[depth+1]=nodes[depth]->child[flag];
+			flag[depth]=(cmp>0);
+			nodes[depth+1]=nodes[depth]->child[flag[depth]];
 			depth++;
 			continue;
 		}
 
-		//íœ‘ÎÛƒm[ƒh
+		//å‰Šé™¤å¯¾è±¡ãƒŽãƒ¼ãƒ‰
 		NODE* node=nodes[depth];
 
-		//’l‚ð‘Þ”ð
+		//å€¤ã‚’é€€é¿
 		void* value=node->value;
 		
-		/* deleteˆ— */
-		if(node->child[0] && node->child[1]){//íœ‘ÎÛƒm[ƒh‚Ì¶‰E‚ÌŽq‚ª‘¶Ý
-			//íœ‘ÎÛƒm[ƒh‚Ì¶‚Ì‰E‚Ì‰E‚Ìc‰E‚Ìƒm[ƒhi––’[ƒm[ƒhj‚ðŽæ“¾
-			nodes[++depth]=node->child[0];
-			flag=(nodes[depth]->child[1]!=NULL);
+		/* deleteå‡¦ç† */
+		if(node->child[0] && node->child[1]){//å‰Šé™¤å¯¾è±¡ãƒŽãƒ¼ãƒ‰ã®å·¦å³ã®å­ãŒå­˜åœ¨
+			//å‰Šé™¤å¯¾è±¡ãƒŽãƒ¼ãƒ‰ã®å·¦ã®å³ã®å³ã®â€¦å³ã®ãƒŽãƒ¼ãƒ‰ï¼ˆæœ«ç«¯ãƒŽãƒ¼ãƒ‰ï¼‰ã‚’å–å¾—
+			flag[depth]=0;
+			nodes[depth+1]=node->child[0];
+			depth++;
 			while(nodes[depth]->child[1]){
+				flag[depth]=1;
 				nodes[depth+1]=nodes[depth]->child[1];
 				depth++;
 			}
 			
-			//––’[ƒm[ƒh‚ÌƒL[‚Æ’l‚ðíœ‘ÎÛƒm[ƒh‚ÉˆÚ‚·
+			//æœ«ç«¯ãƒŽãƒ¼ãƒ‰ã®ã‚­ãƒ¼ã¨å€¤ã‚’å‰Šé™¤å¯¾è±¡ãƒŽãƒ¼ãƒ‰ã«ç§»ã™
+			free(node->key);
 			node->key=nodes[depth]->key;
 			node->value=nodes[depth]->value;
 
-			//––’[ƒm[ƒh‚Ìe‚Ì‰E‚ð•t‚¯‘Ö‚¦‚é
-			nodes[depth-1]->child[flag]=nodes[depth]->child[0];
+			//æœ«ç«¯ãƒŽãƒ¼ãƒ‰ã®è¦ªã®å³ã‚’ä»˜ã‘æ›¿ãˆã‚‹
+			nodes[depth-1]->child[flag[depth-1]]=nodes[depth]->child[0];
 
-			//––’[ƒm[ƒh‚Ì‰ð•ú
-			free(nodes[depth]->key);
+			//æœ«ç«¯ãƒŽãƒ¼ãƒ‰ã®è§£æ”¾
 			free(nodes[depth]);
 		}else{
-			if(node->child[0]){//íœ‘ÎÛƒm[ƒh‚Ì¶‚ÌŽq‚ª‘¶Ý
+			if(node->child[0]){//å‰Šé™¤å¯¾è±¡ãƒŽãƒ¼ãƒ‰ã®å·¦ã®å­ãŒå­˜åœ¨
 				if(depth){
-					nodes[depth-1]->child[flag]=node->child[0];
+					nodes[depth-1]->child[flag[depth-1]]=node->child[0];
 				}else{
 					map->root=node->child[0];
 				}
 				
-			}else if(node->child[1]){//íœ‘ÎÛƒm[ƒh‚Ì‰E‚ÌŽq‚ª‘¶Ý
+			}else if(node->child[1]){//å‰Šé™¤å¯¾è±¡ãƒŽãƒ¼ãƒ‰ã®å³ã®å­ãŒå­˜åœ¨
 				if(depth){
-					nodes[depth-1]->child[flag]=node->child[1];
+					nodes[depth-1]->child[flag[depth-1]]=node->child[1];
 				}else{
 					map->root=node->child[1];
 				}
 			}else{
 				if(depth){
-					nodes[depth-1]->child[flag]=NULL;
+					nodes[depth-1]->child[flag[depth-1]]=NULL;
 				}else{
 					map->root=NULL;
 				}
@@ -218,8 +229,8 @@ void* erase(MAP map, const char* key){
 		}
 		nodes[depth]=NULL;
 
-		//––’[ƒm[ƒh‚Ì‘O‚©‚çª‚ÉŒü‚©‚Á‚Ä•½t«‚ð•Û‚Â‚æ‚¤‚Éˆ—
-		take_balance(depth,nodes);
+		//æœ«ç«¯ãƒŽãƒ¼ãƒ‰ã®å‰ã‹ã‚‰æ ¹ã«å‘ã‹ã£ã¦å¹³è¡¡æ€§ã‚’ä¿ã¤ã‚ˆã†ã«å‡¦ç†
+		take_balance(map, depth, nodes, flag);
 		return value;
 	}
 
@@ -227,8 +238,8 @@ void* erase(MAP map, const char* key){
 }
 
 /*
- * ˜A‘z”z—ñ‚Ìƒm[ƒh‚ð‰ð•ú
- * ‰EË¶Ëe‚Ì‡‚Å‰ð•ú
+ * é€£æƒ³é…åˆ—ã®ãƒŽãƒ¼ãƒ‰ã‚’è§£æ”¾
+ * å³â‡’å·¦â‡’è¦ªã®é †ã§è§£æ”¾
  */
 void _clear(NODE* node, int flag){
 	if(node){
@@ -241,7 +252,7 @@ void _clear(NODE* node, int flag){
 }
 
 /*
- * ˜A‘z”z—ñ‚ð‰Šú‰»
+ * é€£æƒ³é…åˆ—ã‚’åˆæœŸåŒ–
  */
 void clear(MAP map, int flag){
 	_clear(map->root,flag);
