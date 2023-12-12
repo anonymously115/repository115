@@ -1,20 +1,20 @@
-/* ˜A‘z”z—ñ\‘¢‘Ì */
+/* é€£æƒ³é…åˆ—æ§‹é€ ä½“ */
 typedef struct MAP* MAP;
 
-/* ƒRƒ“ƒXƒgƒ‰ƒNƒ^ */
+/* ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ */
 MAP newMap();
 
-/* ƒL[‚Æ’l‚ğƒZƒbƒgiƒL[‚ªŠù‚É‘¶İ‚µ‚Ä‚¢‚ê‚Îupdate, –³‚¯‚ê‚Îinsert‚Ì–ğŠ„j */
+/* ã‚­ãƒ¼ã¨å€¤ã‚’ã‚»ãƒƒãƒˆï¼ˆã‚­ãƒ¼ãŒæ—¢ã«å­˜åœ¨ã—ã¦ã„ã‚Œã°update, ç„¡ã‘ã‚Œã°insertã®å½¹å‰²ï¼‰ */
 void setValue(MAP map, const char* key, void* value);
 
-/* ’l‚ğæ“¾ */
+/* å€¤ã‚’å–å¾— */
 void* getValue(MAP map, const char* key);
 
-/* ˜A‘z”z—ñ“à‚Ì‘S‚Ä‚ÌƒL[A’l‚É‘Î‚µ‚Äˆ— */
+/* é€£æƒ³é…åˆ—å†…ã®å…¨ã¦ã®ã‚­ãƒ¼ã€å€¤ã«å¯¾ã—ã¦å‡¦ç† */
 void foreach(MAP map, void (*func)(const char* key, const void* value));
 
-/* ˜A‘z”z—ñ“à‚ÌƒL[‚ğíœ */
+/* é€£æƒ³é…åˆ—å†…ã®ã‚­ãƒ¼ã‚’å‰Šé™¤ */
 void* erase(MAP map, const char* key);
 
-/* ˜A‘z”z—ñ‚ğ‰Šú‰»iƒvƒƒOƒ‰ƒ€I—¹‚É–Y‚ê‚È‚¢!!j */
+/* é€£æƒ³é…åˆ—ã‚’åˆæœŸåŒ–ï¼ˆãƒ—ãƒ­ã‚°ãƒ©ãƒ çµ‚äº†æ™‚ã«å¿˜ã‚Œãªã„!!ï¼‰ */
 void clear(MAP map, int flag);

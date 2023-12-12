@@ -1,19 +1,19 @@
 #ifndef _LIST_H_
 #define _LIST_H_
 
-/* ƒŠƒXƒg\‘¢‘Ì */
+/* ãƒªã‚¹ãƒˆæ§‹é€ ä½“ */
 typedef struct LIST* LIST;
 
-/* ƒRƒ“ƒXƒgƒ‰ƒNƒ^ */
+/* ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ */
 LIST newList(void);
 
-/* ƒŠƒXƒg‚É—v‘f‚ð’Ç‰Á */
+/* ãƒªã‚¹ãƒˆã«è¦ç´ ã‚’è¿½åŠ  */
 void add(LIST, void*);
 
-/* ƒŠƒXƒg‚Ì—v‘f‚Éˆ—‚ð“K—p */
+/* ãƒªã‚¹ãƒˆã®è¦ç´ ã«å‡¦ç†ã‚’é©ç”¨ */
 void foreach(const LIST, void (*)(void*));
 
-/* ƒŠƒXƒg‰ð•ú */
+/* ãƒªã‚¹ãƒˆè§£æ”¾ */
 void clear(LIST, int);
 
 #endif //_LIST_H_

@@ -2,51 +2,51 @@
 #include "replace.h"
 
 /*
- * ��������̓���̃e�L�X�g��u������
- * dst : �u����̕�����
- * src : �u�����镶����
- * old : ����������
- * new : �u��������
- * �߂�l : �u����̕�����̐擪�ւ̃|�C���^
+ * 文字列内の特定のテキストを置換する
+ * dst : 置換後の文字列
+ * src : 置換する文字列
+ * old : 検索文字列
+ * new : 置換文字列
+ * 戻り値 : 置換後の文字列の先頭へのポインタ
  */
 char* replace(char* dst, const char* src, const char* old, const char* new){
-	if(!strcmp(old,"")){//���������񂪋󕶎��̏ꍇ
-		//�u����̕�����ɒu���O�̕�������R�s�[
+	if(!strcmp(old,"")){//検索文字列が空文字の場合
+		//置換後の文字列に置換前の文字列をコピー
 		strcpy(dst,src);
 		
-		//�u����̕�����i�̐擪�ւ̃|�C���^�j��Ԃ�
+		//置換後の文字列（の先頭へのポインタ）を返す
 		return dst;
 	}
 
-	//�o�͕�������󕶎���ŏ�����
+	//出力文字列を空文字列で初期化
 	strcpy(dst, "");
 	
-	//����������
+	//検索文字列長
 	int a=(int)strlen(old);
 	
-	//�u�����镶����̐擪�ւ̃|�C���^
+	//置換する文字列の先頭へのポインタ
 	const char* c=src;
 
-	//�u�����镶����Ɍ��������񂪊܂܂�Ă���΁A���̕����̐擪�ւ̃|�C���^�i�������NULL�j
+	//置換する文字列に検索文字列が含まれていれば、その部分の先頭へのポインタ（無ければNULL）
 	char* s=strstr(c,old);
 	
-	while(s){//�u�����镶����Ɍ��������񂪊܂܂�Ă���
-		//����������Ƀq�b�g����܂ł̕�������o�͕�����Ɍ���
+	while(s){//置換する文字列に検索文字列が含まれていた
+		//検索文字列にヒットするまでの文字列を出力文字列に結合
 		strncat(dst,c,s-c);
 
-		//�o�͕�����ɒu�������������
+		//出力文字列に置換文字列を結合
 		strcat(dst,new);
 
-		//���̌����ʒu�̓q�b�g��������������̖����̎�
+		//次の検索位置はヒットした検索文字列の末尾の次
 		c=s+a;
 
-		//���̌����������T������
+		//次の検索文字列を探索する
 		s=strstr(c,old);
 	}
 
-	//�Ō�̌���������ȍ~�̕�������o�͕�����Ɍ�������
+	//最後の検索文字列以降の文字列を出力文字列に結合する
 	strcat(dst,c);
 
-	//�u����̕�����̐擪�ւ̃|�C���^��Ԃ�
+	//置換後の文字列の先頭へのポインタを返す
 	return dst;
 }

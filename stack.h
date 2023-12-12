@@ -1,16 +1,16 @@
 #ifndef _STACK_H_
 #define _STACK_H_
 
-/* ƒXƒ^ƒbƒN\‘¢‘Ì */
+/* ã‚¹ã‚¿ãƒƒã‚¯æ§‹é€ ä½“ */
 typedef struct STACK* STACK;
 
-/* ƒRƒ“ƒXƒgƒ‰ƒNƒ^ */
+/* ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ */
 STACK newStack(void);
 
-/* ƒXƒ^ƒbƒN‚É—v‘f‚ð’Ç‰Á‚·‚é */
+/* ã‚¹ã‚¿ãƒƒã‚¯ã«è¦ç´ ã‚’è¿½åŠ ã™ã‚‹ */
 void push(STACK, void*);
 
-/* ƒXƒ^ƒbƒN‚©‚ç—v‘f‚ðŽæ‚èo‚· */
+/* ã‚¹ã‚¿ãƒƒã‚¯ã‹ã‚‰è¦ç´ ã‚’å–ã‚Šå‡ºã™ */
 void* pop(STACK);
 
 #endif //_STACK_H_

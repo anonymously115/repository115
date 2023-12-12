@@ -1,16 +1,16 @@
 #ifndef _PRIORITY_QUEUE_H_
 #define _PRIORITY_QUEUE_H_
 
-/* —Dæ“x•t‚«ƒLƒ…[\‘¢‘Ì */
+/* å„ªå…ˆåº¦ä»˜ãã‚­ãƒ¥ãƒ¼æ§‹é€ ä½“ */
 typedef struct PRIORITY_QUEUE* PRIORITY_QUEUE;
 
-/* ƒRƒ“ƒXƒgƒ‰ƒNƒ^ */
+/* ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ */
 PRIORITY_QUEUE newPriorityQueue(int (*)(const void*, const void*));
 
-/* —v‘f‚ð’Ç‰Á‚·‚é */
+/* è¦ç´ ã‚’è¿½åŠ ã™ã‚‹ */
 void push(PRIORITY_QUEUE queue, void* value);
 
-/* —v‘f‚ðŽæ‚èo‚· */
+/* è¦ç´ ã‚’å–ã‚Šå‡ºã™ */
 void* pop(PRIORITY_QUEUE queue);
 
 #endif //_PRIORITY_QUEUE_H_

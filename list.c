@@ -1,97 +1,97 @@
 #include <stdlib.h>
 #include "list.h"
 
-/* ƒm[ƒhi’P•ûŒüƒŠƒXƒgj */
+/* ãƒãƒ¼ãƒ‰ï¼ˆå˜æ–¹å‘ãƒªã‚¹ãƒˆï¼‰ */
 typedef struct NODE{
-	void* value; //ƒf[ƒ^
-	struct NODE* next; //Ÿ‚Ìƒf[ƒ^‚ÌŠi”[ˆÊ’u‚ğ¦‚·ƒ|ƒCƒ“ƒ^
+	void* value; //ãƒ‡ãƒ¼ã‚¿
+	struct NODE* next; //æ¬¡ã®ãƒ‡ãƒ¼ã‚¿ã®æ ¼ç´ä½ç½®ã‚’ç¤ºã™ãƒã‚¤ãƒ³ã‚¿
 }NODE;
 
-/* ƒŠƒXƒg\‘¢ */
+/* ãƒªã‚¹ãƒˆæ§‹é€  */
 struct LIST{
-	NODE* front; //æ“ªƒm[ƒh‚Ö‚Ìƒ|ƒCƒ“ƒ^
+	NODE* front; //å…ˆé ­ãƒãƒ¼ãƒ‰ã¸ã®ãƒã‚¤ãƒ³ã‚¿
 };
 
 /*
- * ƒŠƒXƒg‚ÌƒRƒ“ƒXƒgƒ‰ƒNƒ^
+ * ãƒªã‚¹ãƒˆã®ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
  */
 LIST newList(void){
-	//ƒƒ‚ƒŠŠm•Û
+	//ãƒ¡ãƒ¢ãƒªç¢ºä¿
 	LIST list=(LIST)malloc(sizeof(struct LIST));
-	if(!list){//ƒƒ‚ƒŠŠm•Û¸”s
+	if(!list){//ãƒ¡ãƒ¢ãƒªç¢ºä¿å¤±æ•—
 		abort();
 	}
 
-	//ƒŠƒXƒg‚Ìæ“ªƒm[ƒh‚ğNULL‚ÉƒZƒbƒg‚·‚é
+	//ãƒªã‚¹ãƒˆã®å…ˆé ­ãƒãƒ¼ãƒ‰ã‚’NULLã«ã‚»ãƒƒãƒˆã™ã‚‹
 	list->front=NULL;
 	return list;
 }
 
 /*
- * ƒŠƒXƒg‚Ì––”ö‚É—v‘f‚ğ’Ç‰Á
- * list : ƒŠƒXƒg
- * value : ’Ç‰Á‚·‚éƒf[ƒ^
+ * ãƒªã‚¹ãƒˆã®æœ«å°¾ã«è¦ç´ ã‚’è¿½åŠ 
+ * list : ãƒªã‚¹ãƒˆ
+ * value : è¿½åŠ ã™ã‚‹ãƒ‡ãƒ¼ã‚¿
  */
 void add(LIST list, void* value){
-	//ƒƒ‚ƒŠŠm•Û
+	//ãƒ¡ãƒ¢ãƒªç¢ºä¿
 	NODE* node=(NODE*)malloc(sizeof(NODE));
-	if(!node){//ƒƒ‚ƒŠŠm•Û¸”s
+	if(!node){//ãƒ¡ãƒ¢ãƒªç¢ºä¿å¤±æ•—
 		abort();
 	}
 
-	//ƒm[ƒh‚Éƒf[ƒ^‚ğƒZƒbƒg
+	//ãƒãƒ¼ãƒ‰ã«ãƒ‡ãƒ¼ã‚¿ã‚’ã‚»ãƒƒãƒˆ
 	node->value=value;
 
-	//V‚µ‚¢ƒm[ƒh‚ÌŸ‚ÍNULL
+	//æ–°ã—ã„ãƒãƒ¼ãƒ‰ã®æ¬¡ã¯NULL
 	node->next=NULL;
 
-	//––”öƒm[ƒh‚ÌŸ‚ÉV‚µ‚¢ƒm[ƒh‚ğƒZƒbƒg
-	if(!list->front){//‹óƒŠƒXƒg‚Ìê‡
-		//æ“ª—v‘f‚É’Ç‰Á
+	//æœ«å°¾ãƒãƒ¼ãƒ‰ã®æ¬¡ã«æ–°ã—ã„ãƒãƒ¼ãƒ‰ã‚’ã‚»ãƒƒãƒˆ
+	if(!list->front){//ç©ºãƒªã‚¹ãƒˆã®å ´åˆ
+		//å…ˆé ­è¦ç´ ã«è¿½åŠ 
 		list->front=node;
 	}else{
-		//Œ»İ‚Ì––”öƒm[ƒhiuŸ‚Ìƒm[ƒh‚ªNULLv‚Æ‚È‚Á‚Ä‚¢‚éƒm[ƒhj‚ğ’T‚·
+		//ç¾åœ¨ã®æœ«å°¾ãƒãƒ¼ãƒ‰ï¼ˆã€Œæ¬¡ã®ãƒãƒ¼ãƒ‰ãŒNULLã€ã¨ãªã£ã¦ã„ã‚‹ãƒãƒ¼ãƒ‰ï¼‰ã‚’æ¢ã™
 		NODE* n=list->front;
 		while(n->next){
 			n=n->next;
 		}
 
-		//––”öƒm[ƒh‚ÌŸ‚ªV‚µ‚¢ƒm[ƒh
+		//æœ«å°¾ãƒãƒ¼ãƒ‰ã®æ¬¡ãŒæ–°ã—ã„ãƒãƒ¼ãƒ‰
 		n->next=node;
 	}
 }
 
 /*
- * ƒŠƒXƒg‚Ì—v‘f‚Éˆ—‚ğ“K—p
- * list : ƒŠƒXƒg
- * func : ˆ—iŠÖ”j
+ * ãƒªã‚¹ãƒˆã®è¦ç´ ã«å‡¦ç†ã‚’é©ç”¨
+ * list : ãƒªã‚¹ãƒˆ
+ * func : å‡¦ç†ï¼ˆé–¢æ•°ï¼‰
  */
 void foreach(LIST list, void (*func)(void*)){
-	for(NODE* node=list->front;node;node=node->next){//ƒŠƒXƒg‚Ìæ“ª‚©‚çƒm[ƒh‚ğ’H‚Á‚Ä‚¢‚­
-		//ƒm[ƒh“à‚Ìƒf[ƒ^‚Éˆ—‚ğ“K—p
+	for(NODE* node=list->front;node;node=node->next){//ãƒªã‚¹ãƒˆã®å…ˆé ­ã‹ã‚‰ãƒãƒ¼ãƒ‰ã‚’è¾¿ã£ã¦ã„ã
+		//ãƒãƒ¼ãƒ‰å†…ã®ãƒ‡ãƒ¼ã‚¿ã«å‡¦ç†ã‚’é©ç”¨
 		func(node->value);
 	}
 }
 
 /*
- * ƒŠƒXƒg‚Ì‰ğ•ú
- * list : ƒŠƒXƒg
- * flag : malloc“™‚Åƒƒ‚ƒŠŠm•Û‚µ‚½—v‘f‚ğ’Ç‰Á‚µ‚½ê‡‚Í”ñ—ë
+ * ãƒªã‚¹ãƒˆã®è§£æ”¾
+ * list : ãƒªã‚¹ãƒˆ
+ * flag : mallocç­‰ã§ãƒ¡ãƒ¢ãƒªç¢ºä¿ã—ãŸè¦ç´ ã‚’è¿½åŠ ã—ãŸå ´åˆã¯éé›¶
  */
 void clear(LIST list, int flag){
-	//ƒŠƒXƒg‚Ìæ“ª‚©‚ç‡‚Éƒm[ƒh‚ğ‰ğ•ú‚µ‚Ä‚¢‚­
+	//ãƒªã‚¹ãƒˆã®å…ˆé ­ã‹ã‚‰é †ã«ãƒãƒ¼ãƒ‰ã‚’è§£æ”¾ã—ã¦ã„ã
 	while(list->front){
 		NODE* node=list->front;
 		
-		//malloc“™‚ÅŠm•Û‚µ‚½—v‘f‚ğ’Ç‰Á‚µ‚½ê‡A‚»‚Ìƒƒ‚ƒŠ‚ğ‰ğ•ú
+		//mallocç­‰ã§ç¢ºä¿ã—ãŸè¦ç´ ã‚’è¿½åŠ ã—ãŸå ´åˆã€ãã®ãƒ¡ãƒ¢ãƒªã‚’è§£æ”¾
 		if(flag){
 			free(node->value);
 		}
 
-		//ƒŠƒXƒg‚Ìæ“ªƒm[ƒh‚ğŒq‚¬‘Ö‚¦‚é
+		//ãƒªã‚¹ãƒˆã®å…ˆé ­ãƒãƒ¼ãƒ‰ã‚’ç¹‹ãæ›¿ãˆã‚‹
 		list->front=node->next;
 
-		//ƒm[ƒh‰ğ•ú
+		//ãƒãƒ¼ãƒ‰è§£æ”¾
 		free(node);
 	}
 }

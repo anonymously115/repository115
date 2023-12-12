@@ -1,16 +1,16 @@
 #include <stdlib.h>
 #include "priority_queue.h"
 
-/* ƒq[ƒv–Ø‚Ìƒm[ƒh */
+/* ãƒ’ãƒ¼ãƒ—æœ¨ã®ãƒãƒ¼ãƒ‰ */
 typedef struct NODE{
-	void* value; //ƒf[ƒ^
-	struct NODE* child[2]; //child[0]‚ª¶‚ÌqAchild[1]‚ª‰E‚Ìq
+	void* value; //ãƒ‡ãƒ¼ã‚¿
+	struct NODE* child[2]; //child[0]ãŒå·¦ã®å­ã€child[1]ãŒå³ã®å­
 }NODE;
 
 struct PRIORITY_QUEUE{
-	NODE* root; //ƒq[ƒv–Ø‚Ìª
-	size_t size; //—v‘f”
-	int (*cmp)(const void*, const void*); //”äŠrŠÖ”
+	NODE* root; //ãƒ’ãƒ¼ãƒ—æœ¨ã®æ ¹
+	size_t size; //è¦ç´ æ•°
+	int (*cmp)(const void*, const void*); //æ¯”è¼ƒé–¢æ•°
 };
 
 PRIORITY_QUEUE newPriorityQueue(int (*cmp)(const void*, const void*)){
@@ -33,7 +33,7 @@ void push(PRIORITY_QUEUE queue, void* value){
 	node->child[0]=NULL;
 	node->child[1]=NULL;
 
-	/* ˆê’UA––”ö‚É’Ç‰Á(*1) */
+	/* ä¸€æ—¦ã€æœ«å°¾ã«è¿½åŠ (*1) */
 	size_t t=++queue->size;
 	int A[8*sizeof(size_t)];
 	size_t a=0;
@@ -43,11 +43,11 @@ void push(PRIORITY_QUEUE queue, void* value){
 	}
 
 	NODE* nodes[a+1];
-	nodes[a]=NULL; //”Ô•º
-	nodes[0]=node; //Vƒm[ƒh
-	if(!queue->root){//—v‘f”‚ª0‚¾‚Á‚½ê‡i‚±‚Ì‚ÉŒÀ‚èa=1j
+	nodes[a]=NULL; //ç•ªå…µ
+	nodes[0]=node; //æ–°ãƒãƒ¼ãƒ‰
+	if(!queue->root){//è¦ç´ æ•°ãŒ0ã ã£ãŸå ´åˆï¼ˆã“ã®æ™‚ã«é™ã‚Ša=1ï¼‰
 		queue->root=node;
-	}else{//‚·‚Å‚É—v‘f‚ ‚èi‚±‚Ìa>=2j
+	}else{//ã™ã§ã«è¦ç´ ã‚ã‚Šï¼ˆã“ã®æ™‚a>=2ï¼‰
 		nodes[a-1]=queue->root;
 		for(size_t i=a-2;i>0;i--){
 			nodes[i]=nodes[i+1]->child[A[i]];
@@ -55,16 +55,16 @@ void push(PRIORITY_QUEUE queue, void* value){
 		nodes[1]->child[A[0]]=node;
 	}
 
-	//q(child)‚Ì“Yš
+	//å­(child)ã®æ·»å­—
 	size_t c=0;
 
-	//e(parent)‚Ì“Yš
+	//è¦ª(parent)ã®æ·»å­—
 	size_t p=c+1;
 	
-	//“ü‚ê‘Ö‚¦ì‹Æ
+	//å…¥ã‚Œæ›¿ãˆä½œæ¥­
 	while(nodes[p]){
-		if(queue->cmp(nodes[c]->value,nodes[p]->value)<0){//q‚ªu¬‚³‚¢v
-			//ƒm[ƒh“à‚Ì’l‚ğ“ü‚ê‘Ö‚¦
+		if(queue->cmp(nodes[c]->value,nodes[p]->value)<0){//å­ãŒã€Œå°ã•ã„ã€
+			//ãƒãƒ¼ãƒ‰å†…ã®å€¤ã‚’å…¥ã‚Œæ›¿ãˆ
 			void* tmp=nodes[c]->value;
 			nodes[c]->value=nodes[p]->value;
 			nodes[p]->value=tmp;
@@ -72,10 +72,10 @@ void push(PRIORITY_QUEUE queue, void* value){
 			break;
 		}
 		
-		//q‚Ì“Y‚¦š‚ğXV
+		//å­ã®æ·»ãˆå­—ã‚’æ›´æ–°
 		c=p;
 		
-		//e‚Ì“Y‚¦š‚ğXV
+		//è¦ªã®æ·»ãˆå­—ã‚’æ›´æ–°
 		p=c+1;
 	}
 }
@@ -85,11 +85,11 @@ void* pop(PRIORITY_QUEUE queue){
 		return NULL;
 	}
 	
-	//•Ô‹p’l
+	//è¿”å´å€¤
 	void* value=queue->root->value;
 
-	/* ƒq[ƒvÄ\’z */
-	//––”ö—v‘f‚ğæ“ª‚ÉˆÚ“®
+	/* ãƒ’ãƒ¼ãƒ—å†æ§‹ç¯‰ */
+	//æœ«å°¾è¦ç´ ã‚’å…ˆé ­ã«ç§»å‹•
 	size_t t=queue->size--;
 	int A[8*sizeof(size_t)];
 	size_t a=0;
@@ -103,7 +103,7 @@ void* pop(PRIORITY_QUEUE queue){
 	for(size_t i=a-1;i>0;i--){
 		nodes[i-1]=nodes[i]->child[A[i-1]];
 	}
-	//nodes[0]‚ª––”öƒm[ƒh
+	//nodes[0]ãŒæœ«å°¾ãƒãƒ¼ãƒ‰
 	queue->root->value=nodes[0]->value;
 	free(nodes[0]);
 	nodes[0]=NULL;
@@ -113,31 +113,31 @@ void* pop(PRIORITY_QUEUE queue){
 		queue->root=NULL;
 	}
 	
-	//“ü‚ê‘Ö‚¦ì‹Æ
+	//å…¥ã‚Œæ›¿ãˆä½œæ¥­
 	NODE* parent=nodes[a-1];
 	while(parent){
-		if(!parent->child[0]){//q‚ª‘¶İ‚µ‚È‚¢
+		if(!parent->child[0]){//å­ãŒå­˜åœ¨ã—ãªã„
 			break;
 		}
 		
-		//”äŠr‘ÎÛ‚Æ‚·‚éq
+		//æ¯”è¼ƒå¯¾è±¡ã¨ã™ã‚‹å­
 		NODE* child=NULL;
 
-		if(parent->child[1] && queue->cmp(parent->child[0]->value,parent->child[1]->value)>0){//‰E‚ª‘¶İ‚µA‚©‚Â¶„‰E
-			//‰E‚Ìq‚ª”äŠr‘ÎÛ
+		if(parent->child[1] && queue->cmp(parent->child[0]->value,parent->child[1]->value)>0){//å³ãŒå­˜åœ¨ã—ã€ã‹ã¤å·¦ï¼å³
+			//å³ã®å­ãŒæ¯”è¼ƒå¯¾è±¡
 			child=parent->child[1];
-		}else{//‰E‚ª‘¶İ‚µ‚È‚¢A‚Ü‚½‚Í¶…‰E
-			//¶‚Ìq‚ª”äŠr‘ÎÛ
+		}else{//å³ãŒå­˜åœ¨ã—ãªã„ã€ã¾ãŸã¯å·¦â‰¦å³
+			//å·¦ã®å­ãŒæ¯”è¼ƒå¯¾è±¡
 			child=parent->child[0];
 		}
 
-		if(queue->cmp(parent->value,child->value)>0){//e‚ª‘å‚«‚¢
-			//“ü‚ê‘Ö‚¦
+		if(queue->cmp(parent->value,child->value)>0){//è¦ªãŒå¤§ãã„
+			//å…¥ã‚Œæ›¿ãˆ
 			void* tmp=parent->value;
 			parent->value=child->value;
 			child->value=tmp;
 
-			//Œ»İ‚Ìq‚ğŸ‚Ìe‚Æ‚·‚é
+			//ç¾åœ¨ã®å­ã‚’æ¬¡ã®è¦ªã¨ã™ã‚‹
 			parent=child;
 		}else{
 			break;

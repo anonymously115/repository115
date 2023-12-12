@@ -1,7 +1,7 @@
 #ifndef _REPLACE_H_
 #define _REPLACE_H_
 
-/* •¶š—ñ“à‚Ì“Á’è‚ÌƒeƒLƒXƒg‚ğ’uŠ·‚·‚é */
+/* æ–‡å­—åˆ—å†…ã®ç‰¹å®šã®ãƒ†ã‚­ã‚¹ãƒˆã‚’ç½®æ›ã™ã‚‹ */
 char* replace(char*, const char*, const char*, const char*);
 
 #endif //_REPLACE_H_

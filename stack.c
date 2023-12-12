@@ -1,78 +1,78 @@
 #include <stdlib.h>
 #include "stack.h"
 
-/* �m�[�h */
+/* ノード */
 typedef struct NODE{
-	void* value; //�f�[�^
-	struct NODE* next; //���̃f�[�^�̊i�[�ʒu�������|�C���^
+	void* value; //データ
+	struct NODE* next; //次のデータの格納位置を示すポインタ
 }NODE;
 
-/* �X�^�b�N�\�� */
+/* スタック構造 */
 struct STACK{
-	NODE* front; //�擪�m�[�h�ւ̃|�C���^
+	NODE* front; //先頭ノードへのポインタ
 };
 
 /*
- * �X�^�b�N�̃R���X�g���N�^
+ * スタックのコンストラクタ
  */
 STACK newStack(void){
-	//�������m��
+	//メモリ確保
 	STACK stack=(STACK)malloc(sizeof(struct STACK));
-	if(!stack){//�������m�ێ��s
+	if(!stack){//メモリ確保失敗
 		abort();
 	}
 
-	//�X�^�b�N�̐擪�m�[�h��NULL�ɃZ�b�g����
+	//スタックの先頭ノードをNULLにセットする
 	stack->front=NULL;
 	return stack;
 }
 
 /*
- * �X�^�b�N�̐擪�ɗv�f��ǉ�
- * stack : �X�^�b�N
- * value : �ǉ�����f�[�^
+ * スタックの先頭に要素を追加
+ * stack : スタック
+ * value : 追加するデータ
  */
 void push(STACK stack, void* value){
-	//�������m��
+	//メモリ確保
 	NODE* node=(NODE*)malloc(sizeof(NODE));
-	if(!node){//�������m�ێ��s
+	if(!node){//メモリ確保失敗
 		abort();
 	}
 
-	//�m�[�h�Ƀf�[�^���Z�b�g
+	//ノードにデータをセット
 	node->value=value;
 
-	//�V�����m�[�h�̎��͌��݂̐擪�m�[�h
+	//新しいノードの次は現在の先頭ノード
 	node->next=stack->front;
 	
-	//�擪�m�[�h�͐V�����m�[�h
+	//先頭ノードは新しいノード
 	stack->front=node;
 }
 
 /*
- * �X�^�b�N����v�f�����o��
- * stack : �X�^�b�N
- * �ԋp�l : ���o���f�[�^
+ * スタックから要素を取り出す
+ * stack : スタック
+ * 返却値 : 取り出すデータ
  */
 void* pop(STACK stack){
-	//�v�f����Ȃ�NULL��Ԃ�
+	//要素が空ならNULLを返す
 	if(!stack->front){
 		return NULL;
 	}
 
-	//�擪�m�[�h���擾
+	//先頭ノードを取得
 	NODE* node=stack->front;
 
-	//�ԋp�l���擾
+	//返却値を取得
 	void* value=node->value;
 
-	//�X�^�b�N�̐擪���q���ւ���
+	//スタックの先頭を繋ぎ替える
 	stack->front=node->next;
 
-	//���擪�m�[�h�����
+	//旧先頭ノードを解放
 	free(node);
 
-	//�擾�����l��Ԃ�
+	//取得した値を返す
 	return value;
 }
 

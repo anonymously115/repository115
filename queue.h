@@ -1,16 +1,16 @@
 #ifndef _QUEUE_H_
 #define _QUEUE_H_
 
-/* ƒLƒ…[\‘¢‘Ì */
+/* ã‚­ãƒ¥ãƒ¼æ§‹é€ ä½“ */
 typedef struct QUEUE* QUEUE;
 
-/* ƒRƒ“ƒXƒgƒ‰ƒNƒ^ */
+/* ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ */
 QUEUE newQueue(void);
 
-/* ƒLƒ…[‚É—v‘f‚ð’Ç‰Á‚·‚é */
+/* ã‚­ãƒ¥ãƒ¼ã«è¦ç´ ã‚’è¿½åŠ ã™ã‚‹ */
 void enqueue(QUEUE, void*);
 
-/* ƒLƒ…[‚©‚ç—v‘f‚ðŽæ‚èo‚· */
+/* ã‚­ãƒ¥ãƒ¼ã‹ã‚‰è¦ç´ ã‚’å–ã‚Šå‡ºã™ */
 void* dequeue(QUEUE);
 
 #endif //_QUEUE_H_

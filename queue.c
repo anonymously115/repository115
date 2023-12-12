@@ -1,94 +1,94 @@
 #include <stdlib.h>
 #include "queue.h"
 
-/* �m�[�h */
+/* ノード */
 typedef struct NODE{
-	void* value; //�f�[�^
-	struct NODE* next; //���̃f�[�^�̊i�[�ʒu�������|�C���^
+	void* value; //データ
+	struct NODE* next; //次のデータの格納位置を示すポインタ
 }NODE;
 
-/* �L���[�\�� */
+/* キュー構造 */
 struct QUEUE{
-	NODE* front; //�擪�m�[�h�ւ̃|�C���^
-	NODE* back; //�����m�[�h�ւ̃|�C���^
+	NODE* front; //先頭ノードへのポインタ
+	NODE* back; //末尾ノードへのポインタ
 };
 
 /*
- * �L���[�̃R���X�g���N�^
+ * キューのコンストラクタ
  */
 QUEUE newQueue(void){
-	//�������m��
+	//メモリ確保
 	QUEUE queue=(QUEUE)malloc(sizeof(struct QUEUE));
-	if(!queue){//�������m�ێ��s
+	if(!queue){//メモリ確保失敗
 		abort();
 	}
 
-	//�L���[�̐擪�m�[�h�Ɩ����m�[�h��NULL�ɃZ�b�g����
+	//キューの先頭ノードと末尾ノードをNULLにセットする
 	queue->front=NULL;
 	queue->back=NULL;
 	return queue;
 }
 
 /*
- * �L���[�̖����ɗv�f��ǉ�
- * queue : �L���[
- * value : �ǉ�����f�[�^
+ * キューの末尾に要素を追加
+ * queue : キュー
+ * value : 追加するデータ
  */
 void enqueue(QUEUE queue, void* value){
-	//�������m��
+	//メモリ確保
 	NODE* node=(NODE*)malloc(sizeof(NODE));
-	if(!node){//�������m�ێ��s
+	if(!node){//メモリ確保失敗
 		abort();
 	}
 
-	//�m�[�h�Ƀf�[�^���Z�b�g
+	//ノードにデータをセット
 	node->value=value;
 
-	//�V�����m�[�h�̎���NULL
+	//新しいノードの次はNULL
 	node->next=NULL;
 	
-	//�����m�[�h�̎��͐V�����m�[�h
+	//末尾ノードの次は新しいノード
 	if(queue->back){
 		queue->back->next=node; 
 	}
 
-	//�����m�[�h�͐V�����m�[�h
+	//末尾ノードは新しいノード
 	queue->back=node;
 
-	//�󂾂����ꍇ�A�擪�m�[�h�͐V�����m�[�h���w��
+	//空だった場合、先頭ノードは新しいノードを指す
 	if(!queue->front){
 		queue->front=node;
 	}
 }
 
 /*
- * �L���[�̐擪����v�f�����o��
- * queue : �L���[
- * �ԋp�l : ���o���f�[�^
+ * キューの先頭から要素を取り出す
+ * queue : キュー
+ * 返却値 : 取り出すデータ
  */
 void* dequeue(QUEUE queue){
-	//�v�f����Ȃ�NULL��Ԃ�
+	//要素が空ならNULLを返す
 	if(!queue->front){
 		return NULL;
 	}
 
-	//�擪�m�[�h���擾
+	//先頭ノードを取得
 	NODE* node=queue->front;
 
-	//�ԋp�l���擾
+	//返却値を取得
 	void* value=node->value;
 
-	//�L���[�̐擪���q���ւ���
+	//キューの先頭を繋ぎ替える
 	queue->front=node->next;
 
-	//��ɂȂ����ꍇ�A�L���[�̖�����NULL
+	//空になった場合、キューの末尾はNULL
 	if(!queue->front){
 		queue->back=NULL;
 	}
 
-	//���擪�m�[�h�����
+	//旧先頭ノードを解放
 	free(node);
 
-	//�擾�����l��Ԃ�
+	//取得した値を返す
 	return value;
 }
