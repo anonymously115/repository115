@@ -1,19 +1,19 @@
-#ifndef _LIST_H_
-#define _LIST_H_
+#ifndef LIST_H_
+#define LIST_H_
 
 /* リスト構造体 */
-typedef struct LIST* LIST;
+typedef struct list* List;
 
 /* コンストラクタ */
-LIST newList(void);
+List newList(void);
 
 /* リストに要素を追加 */
-void add(LIST, void*);
+void add(List, void*);
 
 /* リストの要素に処理を適用 */
-void foreach(const LIST, void (*)(void*));
+void foreach(const List, void (*)(void*));
 
 /* リスト解放 */
-void clear(LIST, int);
+void clear(List, int);
 
-#endif //_LIST_H_
+#endif /* LIST_H_ */
