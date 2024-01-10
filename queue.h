@@ -1,16 +1,16 @@
-#ifndef _QUEUE_H_
-#define _QUEUE_H_
+#ifndef QUEUE_H_
+#define QUEUE_H_
 
 /* キュー構造体 */
-typedef struct QUEUE* QUEUE;
+typedef struct queue* Queue;
 
 /* コンストラクタ */
-QUEUE newQueue(void);
+Queue newQueue(void);
 
 /* キューに要素を追加する */
-void enqueue(QUEUE, void*);
+void enqueue(Queue, void*);
 
 /* キューから要素を取り出す */
-void* dequeue(QUEUE);
+void* dequeue(Queue);
 
-#endif //_QUEUE_H_
+#endif /* QUEUE_H_ */

@@ -2,23 +2,23 @@
 #include "queue.h"
 
 /* ノード */
-typedef struct NODE{
+typedef struct node{
 	void* value; //データ
-	struct NODE* next; //次のデータの格納位置を示すポインタ
-}NODE;
+	struct node* next; //次のデータの格納位置を示すポインタ
+}Node;
 
 /* キュー構造 */
-struct QUEUE{
-	NODE* front; //先頭ノードへのポインタ
-	NODE* back; //末尾ノードへのポインタ
+struct queue{
+	Node* front; //先頭ノードへのポインタ
+	Node* back; //末尾ノードへのポインタ
 };
 
 /*
  * キューのコンストラクタ
  */
-QUEUE newQueue(void){
+Queue newQueue(void){
 	//メモリ確保
-	QUEUE queue=(QUEUE)malloc(sizeof(struct QUEUE));
+	Queue queue=(Queue)malloc(sizeof(struct queue));
 	if(!queue){//メモリ確保失敗
 		abort();
 	}
@@ -34,9 +34,9 @@ QUEUE newQueue(void){
  * queue : キュー
  * value : 追加するデータ
  */
-void enqueue(QUEUE queue, void* value){
+void enqueue(Queue queue, void* value){
 	//メモリ確保
-	NODE* node=(NODE*)malloc(sizeof(NODE));
+	Node* node=(Node*)malloc(sizeof(Node));
 	if(!node){//メモリ確保失敗
 		abort();
 	}
@@ -46,10 +46,10 @@ void enqueue(QUEUE queue, void* value){
 
 	//新しいノードの次はNULL
 	node->next=NULL;
-	
+
 	//末尾ノードの次は新しいノード
 	if(queue->back){
-		queue->back->next=node; 
+		queue->back->next=node;
 	}
 
 	//末尾ノードは新しいノード
@@ -66,14 +66,14 @@ void enqueue(QUEUE queue, void* value){
  * queue : キュー
  * 返却値 : 取り出すデータ
  */
-void* dequeue(QUEUE queue){
+void* dequeue(Queue queue){
 	//要素が空ならNULLを返す
 	if(!queue->front){
 		return NULL;
 	}
 
 	//先頭ノードを取得
-	NODE* node=queue->front;
+	Node* node=queue->front;
 
 	//返却値を取得
 	void* value=node->value;
