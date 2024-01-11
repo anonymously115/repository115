@@ -101,7 +101,7 @@ void test65(){test(9,.1,.1,.1,.1,.1,.1,.1,.1,.2);}
 void test66(){test(10,.1,.1,.1,.1,.1,.1,.1,.1,.1,.1);}
 
 int main(int argc, char* argv[]){
-  test1();
+	test1();
 	test2();
 	test3();
 	test4();

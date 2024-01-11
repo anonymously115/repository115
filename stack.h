@@ -1,16 +1,16 @@
-#ifndef _STACK_H_
-#define _STACK_H_
+#ifndef STACK_H_
+#define STACK_H_
 
 /* スタック構造体 */
-typedef struct STACK* STACK;
+typedef struct stack* Stack;
 
 /* コンストラクタ */
-STACK newStack(void);
+Stack newStack(void);
 
 /* スタックに要素を追加する */
-void push(STACK, void*);
+void push(Stack, void*);
 
 /* スタックから要素を取り出す */
-void* pop(STACK);
+void* pop(Stack);
 
-#endif //_STACK_H_
+#endif /* STACK_H_ */
