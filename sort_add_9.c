@@ -77,7 +77,6 @@ void setValue(Map map, const char* key, void* value){
 	while(nodes[depth]){
 		int cmp=strcmp(key,nodes[depth]->key);
 		if(cmp==0){
-			/* update処理 */
 			nodes[depth]->value=value;
 			return;
 		}
@@ -279,7 +278,6 @@ void* pop(PriorityQueue queue){
     Node* nodes[b];
     nodes[b-1]=queue->root; 
     for(size_t i=b-1;i>0;i--){
-        
         nodes[i-1]=nodes[i]->child[bits[i-1]];
     }
     queue->root->value=nodes[0]->value;
