@@ -3,7 +3,7 @@
 #include <errno.h>
 
 int main(void){
-	for(int i=0;i<0xFF;i++){
+	for(int i=0;i<134;i++){
 		fprintf(stderr,"%d\t",i);
 		fflush(stderr);
 		perror(strerror(i));
