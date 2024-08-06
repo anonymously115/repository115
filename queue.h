@@ -2,7 +2,7 @@
 #define QUEUE_H_
 
 /* キュー構造体 */
-typedef struct queue* Queue;
+typedef struct queue *Queue;
 
 /* コンストラクタ */
 Queue newQueue(void);

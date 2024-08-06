@@ -2,7 +2,7 @@
 #define STACK_H_
 
 /* スタック構造体 */
-typedef struct stack* Stack;
+typedef struct stack *Stack;
 
 /* コンストラクタ */
 Stack newStack(void);

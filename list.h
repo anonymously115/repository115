@@ -2,7 +2,7 @@
 #define LIST_H_
 
 /* リスト構造体 */
-typedef struct list* List;
+typedef struct list *List;
 
 /* コンストラクタ */
 List newList(void);
