@@ -1,45 +1,49 @@
 <!DOCTYPE html>
 <html lang="ja">
-	<head>
-		<meta charset="utf-8">
-		<title>FizzBuzz</title>
-		<style>
-			.monospace{
-				font-family: monospace;
-			}
-		</style>
-	</head>
-	<body>
-		<div>
-			1からnまでの数を表示します。但し、<br>
-			aの倍数の場合は「Fizz」、<br>
-			bの倍数の場合は「Buzz」、<br>
-			aの倍数かつbの倍数の場合は「FizzBuzz」を<br>
-			数の代わりに表示します。<br>
-		</div>
-		<form action="javascript:document.getElementById('stdout').innerText=fizzbuzz(document.getElementById('num').valueAsNumber,document.getElementById('fizz').valueAsNumber,document.getElementById('buzz').valueAsNumber);">
-			<label for="num">n=</label><input type="number" id="num" min="0" max="100" value="100"><br>
-			<label for="fizz">a=</label><input type="number" id="fizz" min="1" max="10" value="3"><br>
-			<label for="buzz">b=</label><input type="number" id="buzz" min="1" max="10" value="5"><br>
-			<input type="submit" value="FizzBuzz"/>
-		</form>
-		<div class="monospace" id="stdout"></div>
-		<script>
-			function fizzbuzz(n,a,b){
-				let str="";
-				for(var i=1;i<=n;i++){
-					if(i%a==0 && i%b==0){
-						str+="FizzBuzz\n";
-					}else if(i%a==0){
-						str+="Fizz\n";
-					}else if(i%b==0){
-						str+="Buzz\n";
-					}else{
-						str+=(i + '\n');
-					}
+
+<head>
+	<meta charset="utf-8">
+	<title>FizzBuzz</title>
+	<style>
+		.monospace {
+			font-family: monospace;
+		}
+	</style>
+</head>
+
+<body>
+	<div>
+		1からnまでの数を表示します。但し、<br>
+		aの倍数の場合は「Fizz」、<br>
+		bの倍数の場合は「Buzz」、<br>
+		aの倍数かつbの倍数の場合は「FizzBuzz」を<br>
+		数の代わりに表示します。<br>
+	</div>
+	<form
+		action="javascript:document.getElementById('stdout').innerText=fizzbuzz(document.getElementById('num').valueAsNumber,document.getElementById('fizz').valueAsNumber,document.getElementById('buzz').valueAsNumber);">
+		<label for="num">n=</label><input type="number" id="num" min="0" max="100" value="100"><br>
+		<label for="fizz">a=</label><input type="number" id="fizz" min="1" max="10" value="3"><br>
+		<label for="buzz">b=</label><input type="number" id="buzz" min="1" max="10" value="5"><br>
+		<input type="submit" value="FizzBuzz" />
+	</form>
+	<div class="monospace" id="stdout"></div>
+	<script>
+		function fizzbuzz(n, a, b) {
+			let str = "";
+			for (var i = 1; i <= n; i++) {
+				if (i % a == 0 && i % b == 0) {
+					str += "FizzBuzz\n";
+				} else if (i % a == 0) {
+					str += "Fizz\n";
+				} else if (i % b == 0) {
+					str += "Buzz\n";
+				} else {
+					str += (i + '\n');
 				}
 			}
-			return str;
-		</script>
-	</body>
+		}
+		return str;
+	</script>
+</body>
+
 </html>
