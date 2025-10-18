@@ -1,65 +1,55 @@
+//#define NDEBUG
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
+#include <stdint.h>
 #include <assert.h>
-#include "Adult.h"
+#include "Pub.h"
+
+char* chomp(char* s) {
+	size_t n = strlen(s);
+	while (n--) {
+		if (isspace(s[n])) s[n] = '\0';
+		else break;
+	}
+	return s;
+}
 
 int main(int argc, char *argv[]) {
 	(void) argc;
 	(void) argv;
 #ifdef NDEBUG
-	size_t N, k;
-	scanf("%zu %zu", &N, &k);
-	Customer *customers[N];
+	size_t N;
+	uint16_t k;
+	scanf("%zu %hd\n", &N, &k);
+	uint8_t A[N];
 	for (size_t i = 0; i < N; i++) {
-		unsigned a;
-		scanf("%u", &a);
-		if (a < 20) customers[i] = new_customer();
-		else customers[i] = (Customer*) new_adult();
+		scanf("%u\n", &A[i]);
 	}
+	Pub* pub = new_pub(N, A);
+	char query[] = "1000 softdrink 5000";
 	while (k--) {
-		size_t n;
-		char s[10];
-		scanf("%zu %s", &n, s);
-		n -= 1;
-		if (!strcmp(s, "0")) {
-			customers[n]->take_beer(customers[n]);
-		} else if (!strcmp(s, "A")) {
-			customers[n]->accounting(customers[n]);
-			printf("%u\n", customers[n]->amount);
-		} else {
-			int m;
-			scanf("%d", &m);
-			if (!strcmp(s, "food")) customers[n]->take_food(customers[n], m);
-			else if (!strcmp(s, "softdrink")) customers[n]->take_softdrink(customers[n], m);
-			else if (!strcmp(s, "alcohol")) customers[n]->take_alcohol(customers[n], m);
-		}
+		pub->query(pub, chomp(fgets(query, sizeof(query), stdin)));
 	}
-	printf("%zu\n", get_num_of_left());
 #else
-	size_t N = 2;
-	Customer *customers[N];
-	customers[0] = new_customer();
-	customers[1] = (Customer*) new_adult();
-	customers[0]->take_softdrink(customers[0], 300);
-	customers[0]->take_food(customers[0], 400);
-	customers[0]->take_beer(customers[0]);
-	customers[0]->take_softdrink(customers[0], 600);
-	customers[0]->take_food(customers[0], 700);
-	customers[0]->accounting(customers[0]);
-	customers[1]->take_softdrink(customers[1], 300);
-	customers[1]->take_food(customers[1], 400);
-	customers[1]->take_beer(customers[1]);
-	customers[1]->take_softdrink(customers[1], 600);
-	customers[1]->take_food(customers[1], 700);
-	customers[1]->accounting(customers[1]);
-	assert(customers[0]->amount == 2000);
-	assert(customers[1]->amount == 2300);
+	uint8_t A[] = { 19, 20 };
+	Pub* pub = new_pub(sizeof(A)/sizeof(A[0]), A);
+	pub->query(pub, "1 softdrink 300");
+	pub->query(pub, "1 food 400");
+	pub->query(pub, "1 0");
+	pub->query(pub, "1 softdrink 600");
+	pub->query(pub, "1 food 700");
+	pub->query(pub, "1 A");
+	pub->query(pub, "2 softdrink 300");
+	pub->query(pub, "2 food 400");
+	pub->query(pub, "2 0");
+	pub->query(pub, "2 softdrink 600");
+	pub->query(pub, "2 food 700");
+	pub->query(pub, "2 A");
 	assert(get_num_of_left() == 2);
 #endif
-	while (N) {
-		free(customers[--N]);
-		customers[N] = NULL;
-	}
+	printf("%zu\n", get_num_of_left());
+	del_pub(&pub);
 	return 0;
 }

@@ -1,4 +1,4 @@
 del test.exe
-gcc -Wall -Wextra test.c -o test
+gcc -Wall -Wextra -std=c99 test.c -o test
 .\test
 pause

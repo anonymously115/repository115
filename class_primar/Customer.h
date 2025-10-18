@@ -4,17 +4,22 @@
 typedef struct __Customer* _Customer;
 
 typedef struct Customer {
-	unsigned amount;
+	_Customer _customer;
+	unsigned (*get_amount)(struct Customer*);
+	void (*set_amount)(struct Customer*, unsigned);
 	void (*take_food)(struct Customer*, unsigned);
 	void (*take_softdrink)(struct Customer*, unsigned);
 	void (*take_alcohol)(struct Customer*, unsigned);
 	void (*take_beer)(struct Customer*);
 	void (*accounting)(struct Customer*);
+	void (*destructor)(struct Customer*);
 } Customer;
 
 void customer_init(Customer*);
 
 Customer* new_customer();
+
+void del_customer(Customer**);
 
 size_t get_num_of_left();
 

@@ -11,7 +11,7 @@
 #define try(expression) \
 	do { \
 		if (!(expression)) { \
-			fprintf(stderr, "%s\n", strerror(errno)); \
+			perror(strerror(errno)); \
 			exit(errno); \
 		} \
 	} while (0)
@@ -29,19 +29,14 @@ size_t test(size_t n, size_t k, unsigned A[n], Order o[k]) {
 	FILE *file = NULL;
 	try(file = fopen(IN_FILE, "w"));
 	fprintf(file, "%zu %zu\n", n, k);
-	for (size_t i = 0; i < n; i++) {
-		fprintf(file, "%u\n", A[i]);
-	}
+	for (size_t i = 0; i < n; i++) fprintf(file, "%u\n", A[i]);
 	for (size_t i = 0; i < k; i++) {
-		if (o[i].m) {
-			fprintf(file, "%zu %s %u\n", o[i].n, o[i].s, o[i].m);
-		} else {
-			fprintf(file, "%zu %s\n", o[i].n, o[i].s);
-		}
+		if (o[i].m) fprintf(file, "%zu %s %u\n", o[i].n, o[i].s, o[i].m);
+		else fprintf(file, "%zu %s\n", o[i].n, o[i].s);
 	}
 	try(!fclose(file));
 	clock_t clockt = clock();
-	try(!system(".\\" SOURCE " <" IN_FILE " 1>" OUT_FILE " 2>" ERR_FILE));
+	try(!(errno = system(".\\" SOURCE " <" IN_FILE " 1>" OUT_FILE " 2>" ERR_FILE)));
 	fprintf(stderr, "#%d %f sec\n", ++i, (float) (clock() - clockt) / CLOCKS_PER_SEC);
 	fflush(stderr);
 	try(file = fopen(OUT_FILE, "r"));
@@ -74,7 +69,7 @@ void all_tests() {
 int main(int argc, char *argv[]) {
 	(void) argc;
 	(void) argv;
-	try(!system("gcc -Wall -Wextra -DNDEBUG " SOURCE ".c Customer.c Adult.c -o " SOURCE " 1>" SOURCE ".txt 2>&1"));
+	try(!system("gcc -Wall -Wextra -std=c99 -DNDEBUG " SOURCE ".c Pub.c Adult.c Customer.c -o " SOURCE " 1>" SOURCE ".txt 2>&1"));
 	all_tests();
 	try(!remove(OUT_FILE));
 	try(!remove(IN_FILE));

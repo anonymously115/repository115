@@ -2,7 +2,7 @@
 #include <stdbool.h>
 #include "Adult.h"
 
-typedef struct _Adult{
+struct _Adult{
 	Customer super;
 	bool alcohol;
 	void (*take_food)(struct Customer*, unsigned);
@@ -20,7 +20,7 @@ static void Adult_take_food(Customer *self, unsigned price) {
 static void Adult_take_alcohol(Customer *self, unsigned price) {
 	Adult adult = (Adult) self;
 	adult->alcohol = true;
-	self->amount += price;
+	self->set_amount(self, self->get_amount(self) + price);
 }
 
 Adult new_adult() {
