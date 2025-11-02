@@ -1,55 +1,52 @@
-//#define NDEBUG
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
-#include <ctype.h>
-#include <stdint.h>
-#include <assert.h>
+#include <stdlib.h>
+#include <errno.h>
+#include "util.h"
+#include "input.h"
 #include "Pub.h"
+#include "Customer.h"
 
-char* chomp(char* s) {
-	size_t n = strlen(s);
-	while (n--) {
-		if (isspace(s[n])) s[n] = '\0';
-		else break;
-	}
-	return s;
-}
-
-int main(int argc, char *argv[]) {
-	(void) argc;
-	(void) argv;
-#ifdef NDEBUG
+int main() {
+	char line[] = "1000 softdrink 5000\n";
 	size_t N;
 	uint16_t k;
-	scanf("%zu %hd\n", &N, &k);
-	uint8_t A[N];
-	for (size_t i = 0; i < N; i++) {
-		scanf("%u\n", &A[i]);
+	if (!read_numbers(chomp(fgets(line, sizeof(line), stdin)), &N, &k)) {
+		fprintf(stderr, "%s\n", strerror(errno));
+		return errno;
 	}
-	Pub* pub = new_pub(N, A);
-	char query[] = "1000 softdrink 5000";
+
+	Pub *pub = new_Pub();
+	while (N--) {
+		uint8_t a;
+		if (!read_age(chomp(fgets(line, sizeof(line), stdin)), &a)) {
+			del_Pub(&pub);
+			fprintf(stderr, "%s\n", strerror(errno));
+			return errno;
+		}
+		if (!pub->add_customer(pub, a)) {
+			del_Pub(&pub);
+			fprintf(stderr, "%s\n", strerror(errno));
+			return errno;
+		}
+	}
+
 	while (k--) {
-		pub->query(pub, chomp(fgets(query, sizeof(query), stdin)));
+		size_t n = 0;
+		char s[] = "softdrink";
+		uint32_t m = 0;
+		if (!read_query(chomp(fgets(line, sizeof(line), stdin)), &n, s, &m)) {
+			del_Pub(&pub);
+			fprintf(stderr, "%s\n", strerror(errno));
+			return errno;
+		}
+		if (!pub->order(pub, n - 1, s, m)) {
+			del_Pub(&pub);
+			fprintf(stderr, "%s\n", strerror(errno));
+			return errno;
+		}
 	}
-#else
-	uint8_t A[] = { 19, 20 };
-	Pub* pub = new_pub(sizeof(A)/sizeof(A[0]), A);
-	pub->query(pub, "1 softdrink 300");
-	pub->query(pub, "1 food 400");
-	pub->query(pub, "1 0");
-	pub->query(pub, "1 softdrink 600");
-	pub->query(pub, "1 food 700");
-	pub->query(pub, "1 A");
-	pub->query(pub, "2 softdrink 300");
-	pub->query(pub, "2 food 400");
-	pub->query(pub, "2 0");
-	pub->query(pub, "2 softdrink 600");
-	pub->query(pub, "2 food 700");
-	pub->query(pub, "2 A");
-	assert(get_num_of_left() == 2);
-#endif
+
 	printf("%zu\n", get_num_of_left());
-	del_pub(&pub);
-	return 0;
+	return EXIT_SUCCESS;
 }

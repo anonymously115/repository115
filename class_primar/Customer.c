@@ -5,26 +5,26 @@
 static size_t num_of_left = 0;
 
 struct __Customer {
-	unsigned amount;
+	uint32_t amount;
 };
 
-static unsigned Customer_get_amount(Customer *self) {
+static void Customer_set_amount(Customer *self, uint32_t value) {
+	self->_customer->amount = value;
+}
+
+static uint32_t Customer_get_amount(Customer *self) {
 	return self->_customer->amount;
 }
 
-static void Customer_set_amount(Customer *self, unsigned amount) {
-	self->_customer->amount = amount;
+static void Customer_take_food(Customer *self, uint32_t price) {
+	self->set_amount(self, self->get_amount(self) + price);
 }
 
-static void Customer_take_food(Customer *self, unsigned price) {
-	self->_customer->amount += price;
+static void Customer_take_softdrink(Customer *self, uint32_t price) {
+	self->set_amount(self, self->get_amount(self) + price);
 }
 
-static void Customer_take_softdrink(Customer *self, unsigned price) {
-	self->_customer->amount += price;
-}
-
-static void Customer_take_alcohol(Customer *self, unsigned price) {
+static void Customer_take_alcohol(Customer *self, uint32_t price) {
 	(void) self;
 	(void) price;
 }
@@ -38,36 +38,36 @@ static void Customer_accounting(Customer *self) {
 	num_of_left++;
 }
 
-static void Customer_destructor(Customer* self) {
-	free(self->_customer);
-	self->_customer = NULL;
+bool Customer_init(Customer *customer) {
+	if (!(customer->_customer = (_Customer*) malloc(sizeof(_Customer)))) return false;
+	customer->_customer->amount = 0;
+	customer->set_amount = Customer_set_amount;
+	customer->get_amount = Customer_get_amount;
+	customer->take_food = Customer_take_food;
+	customer->take_softdrink = Customer_take_softdrink;
+	customer->take_alcohol = Customer_take_alcohol;
+	customer->take_beer = Customer_take_beer;
+	customer->accounting = Customer_accounting;
+	return true;
 }
 
-void customer_init(Customer *self) {
-	self->_customer = (_Customer)malloc(sizeof(struct __Customer));
-	self->_customer->amount = 0;
-	self->get_amount = Customer_get_amount;
-	self->set_amount = Customer_set_amount;
-	self->take_food = Customer_take_food;
-	self->take_softdrink = Customer_take_softdrink;
-	self->take_alcohol = Customer_take_alcohol;
-	self->take_beer = Customer_take_beer;
-	self->accounting = Customer_accounting;
-	self->destructor = Customer_destructor;
-}
-
-Customer* new_customer() {
-	Customer *customer = (Customer*) malloc(sizeof(Customer));
-	customer_init(customer);
+Customer* new_Customer() {
+	Customer *customer = NULL;
+	if (!(customer = (Customer*) malloc(sizeof(Customer)))) return NULL;
+	if (!Customer_init(customer)) {
+		del_Customer(&customer);
+		return NULL;
+	}
 	return customer;
-}
-
-void del_customer(Customer** customer) {
-	free((*customer)->_customer);
-	free(*customer);
-	*customer = NULL;
 }
 
 size_t get_num_of_left() {
 	return num_of_left;
+}
+
+void del_Customer(Customer **customer) {
+	if (*customer == NULL) return;
+	free((*customer)->_customer);
+	free(*customer);
+	*customer = NULL;
 }

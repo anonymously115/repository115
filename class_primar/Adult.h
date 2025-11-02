@@ -3,8 +3,8 @@
 
 #include "Customer.h"
 
-typedef struct _Adult* Adult;
+typedef struct __Adult Adult;
 
-Adult new_adult();
+Adult* new_Adult();
 
 #endif /* ADULT_H_ */

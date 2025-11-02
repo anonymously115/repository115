@@ -1,19 +1,18 @@
 #ifndef PUB_H_
 #define PUB_H_
 #include <stdint.h>
-#include "Adult.h"
+#include <stdbool.h>
 
-typedef struct __Pub* _Pub;
+typedef struct __Pub _Pub;
 
 typedef struct Pub {
-	_Pub _pub;
-	void (*query)(struct Pub*, const char*);
+	_Pub *_pub;
+	bool (*add_customer)(struct Pub*, uint8_t);
+	bool (*order)(struct Pub*, size_t, const char*, uint32_t);
 } Pub;
 
-void pub_init(Pub*, size_t, const uint8_t*);
-
-Pub* new_pub(size_t, const uint8_t*);
-
-void del_pub(Pub**);
+bool Pub_init(Pub*);
+Pub* new_Pub();
+void del_Pub(Pub**);
 
 #endif /* PUB_H_ */

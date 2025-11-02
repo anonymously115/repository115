@@ -8,70 +8,107 @@
 #define IN_FILE "in.txt"
 #define OUT_FILE "out.txt"
 #define ERR_FILE "err.txt"
-#define try(expression) \
-	do { \
-		if (!(expression)) { \
-			perror(strerror(errno)); \
-			exit(errno); \
-		} \
-	} while (0)
 
-char result[1 << 10][1 << 4];
+char result[1001][9];
 
-typedef struct {
-	size_t n;
-	char *s;
-	unsigned m;
-} Order;
-
-size_t test(size_t n, size_t k, unsigned A[n], Order o[k]) {
-	static unsigned i = 0;
-	FILE *file = NULL;
-	try(file = fopen(IN_FILE, "w"));
-	fprintf(file, "%zu %zu\n", n, k);
-	for (size_t i = 0; i < n; i++) fprintf(file, "%u\n", A[i]);
-	for (size_t i = 0; i < k; i++) {
-		if (o[i].m) fprintf(file, "%zu %s %u\n", o[i].n, o[i].s, o[i].m);
-		else fprintf(file, "%zu %s\n", o[i].n, o[i].s);
+size_t test(size_t n, const char *lines[])
+{
+	static unsigned k = 0;
+	FILE *file;
+	if (!(file = fopen(IN_FILE, "w")))
+	{
+		fprintf(stderr, "%s\n", strerror(errno));
+		exit(errno);
 	}
-	try(!fclose(file));
-	clock_t clockt = clock();
-	try(!(errno = system(".\\" SOURCE " <" IN_FILE " 1>" OUT_FILE " 2>" ERR_FILE)));
-	fprintf(stderr, "#%d %f sec\n", ++i, (float) (clock() - clockt) / CLOCKS_PER_SEC);
+	for (size_t i = 0; i < n; i++)
+	{
+		fputs(lines[i], file);
+		fputc('\n', file);
+	}
+	fclose(file);
+	clock_t start = clock();
+	if (!!(errno = system(".\\" SOURCE " <" IN_FILE " 1>" OUT_FILE " 2>" ERR_FILE)))
+	{
+		fprintf(stderr, "%s\n", strerror(errno));
+		exit(errno);
+	}
+	fprintf(stderr, "#%u %f sec\n", ++k, (float)(clock() - start) / CLOCKS_PER_SEC);
 	fflush(stderr);
-	try(file = fopen(OUT_FILE, "r"));
+	if (!(file = fopen(OUT_FILE, "r")))
+	{
+		fprintf(stderr, "%s\n", strerror(errno));
+		exit(errno);
+	}
 	size_t m = 0;
-	for (; fgets(result[m], sizeof(result[m]), file); m++);
-	try(!fclose(file));
+	while (fgets(result[m], sizeof(result[m]), file)) m++;
+	fclose(file);
 	return m;
 }
 
-void test0() {
-	unsigned A[] = { };
-	Order orders[] = { };
-	assert(test(sizeof(A) / sizeof(A[0]), sizeof(orders) / sizeof(orders[0]), A, orders) == 1);
+void test0()
+{
+#if 0
+	const char *lines[] = {"0 0"};
+#else
+	const char *lines[] = {"1 1", "1", "1 0"};
+#endif
+	assert(test(sizeof(lines) / sizeof(lines[0]), lines) == 1);
 	assert(!strcmp(result[0], "0\n"));
 }
 
-void test1() {
-	unsigned A[] = { 20 };
-	Order orders[] = { { 1, "0", 0 }, { 1, "A", 0 } };
-	assert(test(sizeof(A) / sizeof(A[0]), sizeof(orders) / sizeof(orders[0]), A, orders) == 2);
-	assert(!strcmp(result[0], "500\n"));
-	assert(!strcmp(result[1], "1\n"));
+void test1()
+{
+	const char *lines[] = {
+		"3 21",
+		"19",
+		"20",
+		"20",
+		"1 softdrink 300",
+		"1 food 340",
+		"1 alcohol 380",
+		"1 softdrink 420",
+		"1 food 460",
+		"1 0",
+		"1 softdrink 540",
+		"1 food 580",
+		"1 A",
+		"2 softdrink 1000",
+		"2 food 2000",
+		"2 alcohol 3000",
+		"2 softdrink 4000",
+		"2 food 5000",
+		"2 A",
+		"3 softdrink 300",
+		"3 food 400",
+		"3 0",
+		"3 softdrink 600",
+		"3 food 700",
+		"3 A",
+	};
+	assert(test(sizeof(lines) / sizeof(lines[0]), lines) == 4);
+	assert(!strcmp(result[0], "2640\n"));
+	assert(!strcmp(result[1], "14800\n"));
+	assert(!strcmp(result[2], "2300\n"));
+	assert(!strcmp(result[3], "3\n"));
 }
 
-void all_tests() {
+void all_tests()
+{
 	test0();
 	test1();
 }
 
 int main(int argc, char *argv[]) {
-	(void) argc;
-	(void) argv;
-	try(!system("gcc -Wall -Wextra -std=c99 -DNDEBUG " SOURCE ".c Pub.c Adult.c Customer.c -o " SOURCE " 1>" SOURCE ".txt 2>&1"));
+	(void)argc;
+	(void)argv;
+	if (system("gcc -Wall -Wextra -Werror -std=c99 " SOURCE ".c input.c util.c Pub.c Adult.c Customer.c -o " SOURCE " 1>" SOURCE ".txt 2>&1"))
+	{
+		perror(NULL);
+		exit(errno);
+	}
 	all_tests();
-	try(!remove(OUT_FILE));
-	try(!remove(IN_FILE));
+	remove(OUT_FILE);
+	remove(IN_FILE);
+	remove(SOURCE ".exe");
 	return errno;
 }
