@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 #include <errno.h>
 #include "Pub.h"
 #include "Adult.h"
@@ -9,14 +10,14 @@ struct __Pub {
 	Customer **customers;
 };
 
-static bool Pub_add_customer(Pub *self, uint8_t age) {
+static Customer* Pub_add_customer(Pub *self, uint8_t age) {
 	errno = 0;
 	size_t n = self->_pub->size;
 	self->_pub->customers = (Customer**) realloc(self->_pub->customers, sizeof(Customer*) * (n + 1));
 	self->_pub->customers[n] = (age < 20) ? new_Customer() : (Customer*) new_Adult();
-	if (self->_pub->customers[n] == NULL) return false;
+	if (self->_pub->customers[n] == NULL) return NULL;
 	self->_pub->size += 1;
-	return true;
+	return self->_pub->customers[n];
 }
 
 static bool Pub_order(Pub *self, size_t n, const char* s, uint32_t m) {
@@ -46,39 +47,41 @@ static bool Pub_order(Pub *self, size_t n, const char* s, uint32_t m) {
 	return true;
 }
 
-bool Pub_init(Pub *pub) {
-	if (!(pub->_pub = (_Pub*) malloc(sizeof(_Pub)))) {
-		return false;
-	}
-	pub->_pub->size = 0;
-	if (!(pub->_pub->customers = (Customer**) malloc(sizeof(Customer*)))) {
-		free(pub->_pub);
-		return false;
-	}
-	pub->add_customer = Pub_add_customer;
-	pub->order = Pub_order;
-	return true;
-}
-
 Pub* new_Pub() {
 	Pub *pub = NULL;
 	if (!(pub = (Pub*) malloc(sizeof(Pub)))) return NULL;
-	if (!Pub_init(pub)) {
+	if (!(pub->_pub = (_Pub*) malloc(sizeof(_Pub)))) {
 		del_Pub(&pub);
 		return NULL;
 	}
+	pub->_pub->size = 0;
+	if (!(pub->_pub->customers = (Customer**) malloc(sizeof(Customer*)))) {
+		del_Pub(&pub);
+		return NULL;
+	}
+	pub->add_customer = Pub_add_customer;
+	pub->order = Pub_order;
 	return pub;
 }
 
 void del_Pub(Pub **pub) {
-	if (*pub == NULL) return;
-	size_t *n = &((*pub)->_pub->size);
-	while (*n) {
-		*n -= 1;
-		del_Customer(&((*pub)->_pub->customers[*n]));
+	if (*pub) {
+		if ((*pub)->_pub) {
+			size_t *n = &((*pub)->_pub->size);
+			if ((*pub)->_pub->customers) {
+				while (*n) {
+					*n -= 1;
+					del_Customer(&((*pub)->_pub->customers[*n]));
+				}
+				free((*pub)->_pub->customers);
+				(*pub)->_pub->customers = NULL;
+			} else {
+				*n = 0;
+			}
+			free((*pub)->_pub);
+			(*pub)->_pub = NULL;
+		}
+		free(*pub);
+		*pub = NULL;
 	}
-	free((*pub)->_pub->customers);
-	free((*pub)->_pub);
-	free(*pub);
-	*pub = NULL;
 }

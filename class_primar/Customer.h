@@ -18,8 +18,8 @@ typedef struct Customer {
 } Customer;
 
 bool Customer_init(Customer*);
-Customer* new_Customer();
-size_t get_num_of_left();
+Customer* new_Customer(void);
+size_t get_num_of_left(void);
 void del_Customer(Customer**);
 
 #endif /* CUSTOMER_H_ */

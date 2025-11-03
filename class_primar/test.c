@@ -11,31 +11,26 @@
 
 char result[1001][9];
 
-size_t test(size_t n, const char *lines[])
-{
+static size_t test(size_t n, const char *lines[]) {
 	static unsigned k = 0;
 	FILE *file;
-	if (!(file = fopen(IN_FILE, "w")))
-	{
+	if (!(file = fopen(IN_FILE, "w"))) {
 		fprintf(stderr, "%s\n", strerror(errno));
 		exit(errno);
 	}
-	for (size_t i = 0; i < n; i++)
-	{
+	for (size_t i = 0; i < n; i++) {
 		fputs(lines[i], file);
 		fputc('\n', file);
 	}
 	fclose(file);
 	clock_t start = clock();
-	if (!!(errno = system(".\\" SOURCE " <" IN_FILE " 1>" OUT_FILE " 2>" ERR_FILE)))
-	{
+	if (!!(errno = system(".\\" SOURCE " <" IN_FILE " 1>" OUT_FILE " 2>" ERR_FILE))) {
 		fprintf(stderr, "%s\n", strerror(errno));
 		exit(errno);
 	}
-	fprintf(stderr, "#%u %f sec\n", ++k, (float)(clock() - start) / CLOCKS_PER_SEC);
+	fprintf(stderr, "#%u %f sec\n", ++k, (float) (clock() - start) / CLOCKS_PER_SEC);
 	fflush(stderr);
-	if (!(file = fopen(OUT_FILE, "r")))
-	{
+	if (!(file = fopen(OUT_FILE, "r"))) {
 		fprintf(stderr, "%s\n", strerror(errno));
 		exit(errno);
 	}
@@ -45,19 +40,17 @@ size_t test(size_t n, const char *lines[])
 	return m;
 }
 
-void test0()
-{
+static void test0() {
 #if 0
 	const char *lines[] = {"0 0"};
 #else
-	const char *lines[] = {"1 1", "1", "1 0"};
+	const char *lines[] = { "1 1", "1", "1 0" };
 #endif
 	assert(test(sizeof(lines) / sizeof(lines[0]), lines) == 1);
 	assert(!strcmp(result[0], "0\n"));
 }
 
-void test1()
-{
+static void test1() {
 	const char *lines[] = {
 		"3 21",
 		"19",
@@ -92,17 +85,15 @@ void test1()
 	assert(!strcmp(result[3], "3\n"));
 }
 
-void all_tests()
-{
+static void all_tests() {
 	test0();
 	test1();
 }
 
 int main(int argc, char *argv[]) {
-	(void)argc;
-	(void)argv;
-	if (system("gcc -Wall -Wextra -Werror -std=c99 " SOURCE ".c input.c util.c Pub.c Adult.c Customer.c -o " SOURCE " 1>" SOURCE ".txt 2>&1"))
-	{
+	(void) argc;
+	(void) argv;
+	if (system("gcc -Wall -Wextra -Werror -std=c99 " SOURCE ".c input.c util.c Pub.c Adult.c Customer.c -o " SOURCE " 1>" SOURCE ".txt 2>&1")) {
 		perror(NULL);
 		exit(errno);
 	}

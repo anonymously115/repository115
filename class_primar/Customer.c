@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include "Customer.h"
 
+const uint32_t BEER_PRICE = 500U;
 static size_t num_of_left = 0;
 
 struct __Customer {
@@ -30,11 +31,11 @@ static void Customer_take_alcohol(Customer *self, uint32_t price) {
 }
 
 static void Customer_take_beer(Customer *self) {
-	self->take_alcohol(self, 500);
+	self->take_alcohol(self, BEER_PRICE);
 }
 
 static void Customer_accounting(Customer *self) {
-	printf("%d\n", self->get_amount(self));
+	printf("%u\n", (unsigned) self->get_amount(self));
 	num_of_left++;
 }
 
@@ -51,7 +52,7 @@ bool Customer_init(Customer *customer) {
 	return true;
 }
 
-Customer* new_Customer() {
+Customer* new_Customer(void) {
 	Customer *customer = NULL;
 	if (!(customer = (Customer*) malloc(sizeof(Customer)))) return NULL;
 	if (!Customer_init(customer)) {
@@ -61,13 +62,17 @@ Customer* new_Customer() {
 	return customer;
 }
 
-size_t get_num_of_left() {
+size_t get_num_of_left(void) {
 	return num_of_left;
 }
 
 void del_Customer(Customer **customer) {
-	if (*customer == NULL) return;
-	free((*customer)->_customer);
-	free(*customer);
-	*customer = NULL;
+	if (*customer) {
+		if ((*customer)->_customer) {
+			free((*customer)->_customer);
+			(*customer)->_customer = NULL;
+		}
+		free(*customer);
+		*customer = NULL;
+	}
 }

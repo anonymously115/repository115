@@ -2,6 +2,8 @@
 #include <stdbool.h>
 #include "Adult.h"
 
+const uint32_t DISCOUNT_PRICE = 200U;
+
 struct __Adult {
 	Customer super;
 	bool alcohol;
@@ -11,7 +13,7 @@ struct __Adult {
 static void Adult_take_food(Customer *self, uint32_t price) {
 	Adult *adult = (Adult*) self;
 	if (adult->alcohol) {
-		adult->take_food(self, price - 200);
+		adult->take_food(self, price - DISCOUNT_PRICE);
 	} else {
 		adult->take_food(self, price);
 	}
