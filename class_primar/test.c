@@ -40,14 +40,23 @@ static size_t test(size_t n, const char *lines[]) {
 	return m;
 }
 
+static int test_err(size_t n, const char *lines[]) {
+	FILE *file;
+	if (!(file = fopen(IN_FILE, "w"))) {
+		fprintf(stderr, "%s\n", strerror(errno));
+		exit(errno);
+	}
+	for (size_t i = 0; i < n; i++) {
+		fputs(lines[i], file);
+		fputc('\n', file);
+	}
+	fclose(file);
+	return system(".\\" SOURCE " <" IN_FILE " 1>" OUT_FILE " 2>" ERR_FILE);
+}
+
 static void test0() {
-#if 0
 	const char *lines[] = {"0 0"};
-#else
-	const char *lines[] = { "1 1", "1", "1 0" };
-#endif
-	assert(test(sizeof(lines) / sizeof(lines[0]), lines) == 1);
-	assert(!strcmp(result[0], "0\n"));
+	assert(test_err(sizeof(lines) / sizeof(lines[0]), lines) == ERANGE);
 }
 
 static void test1() {
@@ -90,16 +99,24 @@ static void all_tests() {
 	test1();
 }
 
-int main(int argc, char *argv[]) {
-	(void) argc;
-	(void) argv;
-	if (system("gcc -Wall -Wextra -Werror -std=c99 " SOURCE ".c input.c util.c Pub.c Adult.c Customer.c -o " SOURCE " 1>" SOURCE ".txt 2>&1")) {
-		perror(NULL);
+int main() {
+	if (!!(errno = system("gcc -Wall -Wextra -Werror -std=c99 " SOURCE ".c input.c util.c Pub.c Adult.c Customer.c -o " SOURCE " 1>" SOURCE ".txt 2>&1"))) {
+		fprintf(stderr, "%s\n", strerror(errno));
+		FILE* file = fopen(SOURCE ".txt", "r");
+		if (file) {
+			int c = 0;
+			while ((c = fgetc(file)) != EOF) {
+				putchar(c);
+			}
+			fclose(file);
+		}
 		exit(errno);
 	}
 	all_tests();
+	remove(ERR_FILE);
 	remove(OUT_FILE);
 	remove(IN_FILE);
 	remove(SOURCE ".exe");
+	remove(SOURCE ".txt");
 	return errno;
 }

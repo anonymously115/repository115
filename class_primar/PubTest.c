@@ -13,6 +13,7 @@ static char* test_constructor() {
 	mu_assert("Error: expected: not <null> but was: <null>", pub);
 	size_t size = sizeof(*pub);
 	del_Pub(&pub);
+	mu_assert("Error: expected: <null> but was: not <null>", !pub);
 	sprintf(msg, "Error: expected: <%zu> but was: <%zu>", sizeof(Pub), size);
 	mu_assert(msg, size == sizeof(Pub));
 	return 0;

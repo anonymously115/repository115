@@ -12,7 +12,7 @@ typedef struct Pub {
 	bool (*order)(struct Pub*, size_t, const char*, uint32_t);
 } Pub;
 
-Pub* new_Pub();
+Pub* new_Pub(void);
 void del_Pub(Pub**);
 
 #endif /* PUB_H_ */

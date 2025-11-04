@@ -12,7 +12,8 @@ static char* test_constructor() {
 	mu_assert("Error: expected: not <null> but was: <null>", adult);
 	Customer *customer = (Customer*) adult;
 	uint32_t amount = customer->get_amount(customer);
-	del_Customer(&customer);
+	del_Customer((Customer**) &adult);
+	mu_assert("Error: expected: <null> but was: not <null>", !adult);
 	sprintf(msg, "Error: expected: <%u> but was: <%u>", 0U, (unsigned) amount);
 	mu_assert(msg, amount == 0U);
 	return 0;

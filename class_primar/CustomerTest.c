@@ -20,6 +20,7 @@ static char* test_constructor() {
 	size_t size = sizeof(*customer);
 	uint32_t amount = customer->get_amount(customer);
 	del_Customer(&customer);
+	mu_assert("Error: expected: <null> but was: not <null>", !customer);
 	sprintf(msg, "Error: expected: <%zu> but was: <%zu>", sizeof(Customer), size);
 	mu_assert(msg, size == sizeof(Customer));
 	sprintf(msg, "Error: expected: <%u> but was: <%u>", 0U, (unsigned) amount);

@@ -34,7 +34,7 @@ bool Adult_init(Adult *adult) {
 	return true;
 }
 
-Adult* new_Adult() {
+Adult* new_Adult(void) {
 	Adult *adult = NULL;
 	if (!(adult = (Adult*) malloc(sizeof(Adult)))) return NULL;
 	if (!Adult_init(adult)) {

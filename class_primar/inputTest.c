@@ -1,5 +1,7 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
+#include <time.h>
 #include <errno.h>
 #include "minunit.h"
 #include "input.h"
@@ -142,6 +144,14 @@ static char* test_read_query_out_of_range(const char *str) {
 	return 0;
 }
 
+static char* test_read_query() {
+	size_t n = (size_t) (1 + rand() % 1000);
+	uint32_t m = (uint32_t) (300 + rand() % 4701);
+	char line[] = "1000 softdrink 5000";
+	sprintf(line, "%zu food %u", n, (unsigned) m);
+	return test_read_query_3_args(line, n, "food", m);
+}
+
 static char* test_read_query_0() {return test_read_query_null();}
 static char* test_read_query_1() {return test_read_query_invalid("");}
 static char* test_read_query_2() {return test_read_query_invalid("a food 300");}
@@ -157,15 +167,15 @@ static char* test_read_query_11() {return test_read_query_invalid("1 0 500");}
 static char* test_read_query_12() {return test_read_query_invalid("1 A 500");}
 static char* test_read_query_13() {return test_read_query_invalid("1 food 300 0");}
 static char* test_read_query_14() {return test_read_query_3_args("1 food 300", 1, "food", 300);}
-static char* test_read_query_15() {return test_read_query_3_args("1000 softdrink 5000", 1000, "softdrink", 5000);}
-static char* test_read_query_16() {return test_read_query_3_args("500 alcohol 2650", 500, "alcohol", 2650);}
+static char* test_read_query_15() {return test_read_query_3_args("1 softdrink 300", 1, "softdrink", 300);}
+static char* test_read_query_16() {return test_read_query_3_args("1000 alcohol 5000", 1000, "alcohol", 5000);}
 static char* test_read_query_17() {return test_read_query_2_args("1 0", 1, "0");}
 static char* test_read_query_18() {return test_read_query_2_args("1000 A", 1000, "A");}
 static char* test_read_query_19() {return test_read_query_out_of_range("0 0");}
 static char* test_read_query_20() {return test_read_query_out_of_range("1001 A");}
 static char* test_read_query_21() {return test_read_query_out_of_range("1 food 299");}
-static char* test_read_query_22() {return test_read_query_out_of_range("1000 softdrink 5001");}
-static char* test_read_query_23() {return test_read_query_out_of_range("1 alcohol 2147483647");}
+static char* test_read_query_22() {return test_read_query_out_of_range("1 softdrink 299");}
+static char* test_read_query_23() {return test_read_query_out_of_range("1000 alcohol 5001");}
 
 static char* all_tests() {
 	mu_run_test(test_read_num_0);
@@ -188,6 +198,7 @@ static char* all_tests() {
 	mu_run_test(test_read_age_5);
 	mu_run_test(test_read_age_6);
 	mu_run_test(test_read_age_7);
+	mu_run_test(test_read_query);
 	mu_run_test(test_read_query_0);
 	mu_run_test(test_read_query_1);
 	mu_run_test(test_read_query_2);
@@ -216,6 +227,7 @@ static char* all_tests() {
 }
 
 int main() {
+	srand((unsigned) time(NULL));
 	char *result = all_tests();
 	if (result != 0) {
 		fprintf(stderr, "%s\n", result);

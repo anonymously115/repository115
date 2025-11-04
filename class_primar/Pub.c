@@ -47,7 +47,7 @@ static bool Pub_order(Pub *self, size_t n, const char* s, uint32_t m) {
 	return true;
 }
 
-Pub* new_Pub() {
+Pub* new_Pub(void) {
 	Pub *pub = NULL;
 	if (!(pub = (Pub*) malloc(sizeof(Pub)))) return NULL;
 	if (!(pub->_pub = (_Pub*) malloc(sizeof(_Pub)))) {

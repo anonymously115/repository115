@@ -5,6 +5,6 @@
 
 typedef struct __Adult Adult;
 
-Adult* new_Adult();
+Adult* new_Adult(void);
 
 #endif /* ADULT_H_ */
