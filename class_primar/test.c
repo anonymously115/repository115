@@ -4,12 +4,30 @@
 #include <time.h>
 #include <assert.h>
 #include <errno.h>
+#include "minunit.h"
 #define SOURCE "main"
 #define IN_FILE "in.txt"
 #define OUT_FILE "out.txt"
 #define ERR_FILE "err.txt"
 
-char result[1001][9];
+int tests_run = 0;
+char msg[] = "Error: expected: <18446744073709551615> but was: <18446744073709551616>";
+char result[1024][16];
+
+static char* message_zu(size_t expected, size_t actual) {
+	sprintf(msg, "Error: expected: <%zu> but was: <%zu>", expected, actual);
+	return msg;
+}
+
+static char* message_s(const char *expected, const char *actual) {
+	sprintf(msg, "Error: expected: <%s> but was: <%s>", expected, actual);
+	return msg;
+}
+
+static char* message_d(int expected, int actual) {
+	sprintf(msg, "Error: expected: <%d> but was: <%d>", expected, actual);
+	return msg;
+}
 
 static size_t test(size_t n, const char *lines[]) {
 	static unsigned k = 0;
@@ -54,12 +72,14 @@ static int test_err(size_t n, const char *lines[]) {
 	return system(".\\" SOURCE " <" IN_FILE " 1>" OUT_FILE " 2>" ERR_FILE);
 }
 
-static void test0() {
+static char* test0() {
 	const char *lines[] = {"0 0"};
-	assert(test_err(sizeof(lines) / sizeof(lines[0]), lines) == ERANGE);
+	int e = test_err(sizeof(lines) / sizeof(lines[0]), lines);
+	mu_assert(message_d(ERANGE, e), e == ERANGE);
+	return 0;
 }
 
-static void test1() {
+static char* test1() {
 	const char *lines[] = {
 		"3 21",
 		"19",
@@ -87,16 +107,19 @@ static void test1() {
 		"3 food 700",
 		"3 A",
 	};
-	assert(test(sizeof(lines) / sizeof(lines[0]), lines) == 4);
-	assert(!strcmp(result[0], "2640\n"));
-	assert(!strcmp(result[1], "14800\n"));
-	assert(!strcmp(result[2], "2300\n"));
-	assert(!strcmp(result[3], "3\n"));
+	size_t n = test(sizeof(lines) / sizeof(lines[0]), lines);
+	mu_assert(message_zu(4, n), n == 4);
+	mu_assert(message_s("2640\n", result[0]), !strcmp(result[0], "2640\n"));
+	mu_assert(message_s("14800\n", result[1]), !strcmp(result[1], "14800\n"));
+	mu_assert(message_s("2300\n", result[2]), !strcmp(result[2], "2300\n"));
+	mu_assert(message_s("3\n", result[3]), !strcmp(result[3], "3\n"));
+	return 0;
 }
 
-static void all_tests() {
-	test0();
-	test1();
+static char* all_tests() {
+	mu_run_test(test0);
+	mu_run_test(test1);
+	return 0;
 }
 
 int main() {
@@ -112,11 +135,22 @@ int main() {
 		}
 		exit(errno);
 	}
-	all_tests();
+	char *result = all_tests();
+	if (result != 0) {
+		fprintf(stderr, "%s\n", result);
+		fprintf(stderr, "Tests run: %d\n", tests_run);
+	} else {
+		fprintf(stdout, "ALL TESTS PASSED\n");
+		fprintf(stdout, "Tests run: %d\n", tests_run);
+	}
 	remove(ERR_FILE);
 	remove(OUT_FILE);
 	remove(IN_FILE);
 	remove(SOURCE ".exe");
 	remove(SOURCE ".txt");
-	return errno;
+	if (errno) {
+		return errno;
+	} else {
+		return result != 0;
+	}
 }

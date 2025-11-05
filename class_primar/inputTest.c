@@ -6,6 +6,7 @@
 #include "minunit.h"
 #include "input.h"
 
+int tests_run = 0;
 char msg[] = "Error: expected: <18446744073709551615> but was: <18446744073709551616>";
 size_t n;
 uint16_t k;
@@ -13,37 +14,54 @@ uint8_t a;
 char s[] = "softdrink";
 uint32_t m;
 
-int tests_run = 0;
+static char* message_hhu(uint8_t expected, uint8_t actual) {
+	sprintf(msg, "Error: expected: <%hhu> but was: <%hhu>", expected, actual);
+	return msg;
+}
 
-static char* test_read_num(const char *str, size_t exn, uint16_t exk) {
+static char* message_d(int expected, int actual) {
+	sprintf(msg, "Error: expected: <%d> but was: <%d>", expected, actual);
+	return msg;
+}
+
+static char* message_u(uint32_t expected, uint32_t actual) {
+	sprintf(msg, "Error: expected: <%u> but was: <%u>", expected, actual);
+	return msg;
+}
+
+static char* message_zu(size_t expected, size_t actual) {
+	sprintf(msg, "Error: expected: <%zu> but was: <%zu>", expected, actual);
+	return msg;
+}
+
+static char* message_s(const char *expected, const char *actual) {
+	sprintf(msg, "Error: expected: <%s> but was: <%s>", expected, actual);
+	return msg;
+}
+
+static char* test_read_num(const char *str, size_t en, uint16_t ek) {
 	mu_assert("Error: expected: <true> but was: <false>", read_numbers(str, &n, &k));
-	sprintf(msg, "Error: expected: <%d> but was: <%d>", 0, errno);
-	mu_assert(msg, errno == 0);
-	sprintf(msg, "Error: expected: <%zu> but was: <%zu>", exn, n);
-	mu_assert(msg, n == exn);
-	sprintf(msg, "Error: expected: <%hu> but was: <%hu>", exk, k);
-	mu_assert(msg, k == exk);
+	mu_assert(message_d(errno, 0), errno == 0);
+	mu_assert(message_zu(en, n), n == en);
+	mu_assert(message_u(ek, k), k == ek);
 	return 0;
 }
 
 static char* test_read_num_null() {
 	mu_assert("Error: expected: <false> but was: <true>", !read_numbers(NULL, &n, &k));
-	sprintf(msg, "Error: expected: <%d> but was: <%d>", EINVAL, errno);
-	mu_assert(msg, errno == EINVAL);
+	mu_assert(message_d(EINVAL, errno), errno == EINVAL);
 	return 0;
 }
 
 static char* test_read_num_invalid(const char *str) {
 	mu_assert("Error: expected: <false> but was: <true>", !read_numbers(str, &n, &k));
-	sprintf(msg, "Error: expected: <%d> but was: <%d>", EINVAL, errno);
-	mu_assert(msg, errno == EINVAL);
+	mu_assert(message_d(EINVAL, errno), errno == EINVAL);
 	return 0;
 }
 
 static char* test_read_num_out_of_range(const char *str) {
 	mu_assert("Error: expected: <false> but was: <true>", !read_numbers(str, &n, &k));
-	sprintf(msg, "Error: expected: <%d> but was: <%d>", ERANGE, errno);
-	mu_assert(msg, errno == ERANGE);
+	mu_assert(message_d(ERANGE, errno), errno == ERANGE);
 	return 0;
 }
 
@@ -60,33 +78,28 @@ static char* test_read_num_9() {return test_read_num_out_of_range("1001 1");}
 static char* test_read_num_10() {return test_read_num_out_of_range("1 0");}
 static char* test_read_num_11() {return test_read_num_out_of_range("1 1001");}
 
-static char* test_read_age(const char *str, uint8_t exa) {
+static char* test_read_age(const char *str, uint8_t ea) {
 	mu_assert("Error: expected: <true> but was: <false>", read_age(str, &a));
-	sprintf(msg, "Error: expected: <%d> but was: <%d>", 0, errno);
-	mu_assert(msg, errno == 0);
-	sprintf(msg, "Error: expected: <%d> but was: <%d>", exa, a);
-	mu_assert(msg, a == exa);
+	mu_assert(message_d(0, errno), errno == 0);
+	mu_assert(message_hhu(ea, a), a == ea);
 	return 0;
 }
 
 static char* test_read_age_null() {
 	mu_assert("Error: expected: <false> but was: <true>", !read_age(NULL, &a));
-	sprintf(msg, "Error: expected: <%d> but was: <%d>", EINVAL, errno);
-	mu_assert(msg, errno == EINVAL);
+	mu_assert(message_d(EINVAL, errno), errno == EINVAL);
 	return 0;
 }
 
 static char* test_read_age_invalid(const char *str) {
 	mu_assert("Error: expected: <false> but was: <true>", !read_age(str, &a));
-	sprintf(msg, "Error: expected: <%d> but was: <%d>", EINVAL, errno);
-	mu_assert(msg, errno == EINVAL);
+	mu_assert(message_d(EINVAL, errno), errno == EINVAL);
 	return 0;
 }
 
 static char* test_read_age_out_of_range(const char *str) {
 	mu_assert("Error: expected: <false> but was: <true>", !read_age(str, &a));
-	sprintf(msg, "Error: expected: <%d> but was: <%d>", ERANGE, errno);
-	mu_assert(msg, errno == ERANGE);
+	mu_assert(message_d(ERANGE, errno), errno == ERANGE);
 	return 0;
 }
 
@@ -99,48 +112,38 @@ static char* test_read_age_5() {return test_read_age("100", 100);}
 static char* test_read_age_6() {return test_read_age_out_of_range("0");}
 static char* test_read_age_7() {return test_read_age_out_of_range("101");}
 
-static char* test_read_query_3_args(const char *str, size_t exn, const char* exs, uint32_t exm) {
+static char* test_read_query_3_args(const char *str, size_t en, const char* es, uint32_t em) {
 	mu_assert("Error: expected: <true> but was: <false>", read_query(str, &n, s, &m));
-	sprintf(msg, "Error: expected: <%d> but was: <%d>", 0, errno);
-	mu_assert(msg, errno == 0);
-	sprintf(msg, "Error: expected: <%zu> but was: <%zu>", exn, n);
-	mu_assert(msg, n == exn);
-	sprintf(msg, "Error: expected: <%s> but was: <%s>", exs, s);
-	mu_assert(msg, !strcmp(s, exs));
-	sprintf(msg, "Error: expected: <%u> but was: <%u>", exm, m);
-	mu_assert(msg, m == exm);
+	mu_assert(message_d(0, errno), errno == 0);
+	mu_assert(message_zu(en, n), n == en);
+	mu_assert(message_s(es, s), !strcmp(s, es));
+	mu_assert(message_u(em, m), m == em);
 	return 0;
 }
 
-static char* test_read_query_2_args(const char *str, size_t exn, const char* exs) {
+static char* test_read_query_2_args(const char *str, size_t en, const char* es) {
 	mu_assert("Error: expected: <true> but was: <false>", read_query(str, &n, s, &m));
-	sprintf(msg, "Error: expected: <%d> but was: <%d>", 0, errno);
-	mu_assert(msg, errno == 0);
-	sprintf(msg, "Error: expected: <%zu> but was: <%zu>", exn, n);
-	mu_assert(msg, n == exn);
-	sprintf(msg, "Error: expected: <%s> but was: <%s>", exs, s);
-	mu_assert(msg, !strcmp(s, exs));
+	mu_assert(message_d(0, errno), errno == 0);
+	mu_assert(message_zu(en, n), n == en);
+	mu_assert(message_s(es, s), !strcmp(s, es));
 	return 0;
 }
 
 static char* test_read_query_null() {
 	mu_assert("Error: expected: <false> but was: <true>", !read_query(NULL, &n, s, &m));
-	sprintf(msg, "Error: expected: <%d> but was: <%d>", EINVAL, errno);
-	mu_assert(msg, errno == EINVAL);
+	mu_assert(message_d(EINVAL, errno), errno == EINVAL);
 	return 0;
 }
 
 static char* test_read_query_invalid(const char *str) {
 	mu_assert("Error: expected: <false> but was: <true>", !read_query(str, &n, s, &m));
-	sprintf(msg, "Error: expected: <%d> but was: <%d>", EINVAL, errno);
-	mu_assert(msg, errno == EINVAL);
+	mu_assert(message_d(EINVAL, errno), errno == EINVAL);
 	return 0;
 }
 
 static char* test_read_query_out_of_range(const char *str) {
 	mu_assert("Error: expected: <false> but was: <true>", !read_query(str, &n, s, &m));
-	sprintf(msg, "Error: expected: <%d> but was: <%d>", ERANGE, errno);
-	mu_assert(msg, errno == ERANGE);
+	mu_assert(message_d(ERANGE, errno), errno == ERANGE);
 	return 0;
 }
 

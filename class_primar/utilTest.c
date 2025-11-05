@@ -4,18 +4,45 @@
 #include "minunit.h"
 #include "util.h"
 
+int tests_run = 0;
 char msg[] = "Error: expected: <18446744073709551615> but was: <18446744073709551616>";
 
-int tests_run = 0;
+static char* message_hhu(uint8_t expected, uint8_t actual) {
+	sprintf(msg, "Error: expected: <%hhu> but was: <%hhu>", expected, actual);
+	return msg;
+}
+
+static char* message_us(uint16_t expected, uint16_t actual) {
+	sprintf(msg, "Error: expected: <%hu> but was: <%hu>", expected, actual);
+	return msg;
+}
+
+static char* message_d(int expected, int actual) {
+	sprintf(msg, "Error: expected: <%d> but was: <%d>", expected, actual);
+	return msg;
+}
+
+static char* message_u(uint32_t expected, uint32_t actual) {
+	sprintf(msg, "Error: expected: <%u> but was: <%u>", expected, actual);
+	return msg;
+}
+
+static char* message_zu(size_t expected, size_t actual) {
+	sprintf(msg, "Error: expected: <%zu> but was: <%zu>", expected, actual);
+	return msg;
+}
+
+static char* message_s(const char *expected, const char *actual) {
+	sprintf(msg, "Error: expected: <%s> but was: <%s>", expected, actual);
+	return msg;
+}
 
 static char* test_chomp(const char *str, const char *expected) {
 	char s[strlen(str) + 1];
 	strcpy(s, str);
 	char *actual = chomp(s);
-	sprintf(msg, "Error: expected: <%s> but was: <%s>", expected, s);
-	mu_assert(msg, !strcmp(s, expected));
-	sprintf(msg, "Error: expected: <%s> but was: <%s>", expected, actual);
-	mu_assert(msg, !strcmp(actual, expected));
+	mu_assert(message_s(expected, s), !strcmp(s, expected));
+	mu_assert(message_s(expected, actual), !strcmp(s, expected));
 	return 0;
 }
 
@@ -32,18 +59,15 @@ static char* test_chomp_4() {return test_chomp(" 0", " 0");}
 static char* test_parse_ubyte(const char *str, uint8_t expected) {
 	uint8_t n = 0;
 	mu_assert("Error: expected: <true> but was: <false>", parse_ubyte(str, &n));
-	sprintf(msg, "Error: expected: <%d> but was: <%d>", 0, errno);
-	mu_assert(msg, errno == 0);
-	sprintf(msg, "Error: expected: <%hhu> but was: <%hhu>", expected, n);
-	mu_assert(msg, n == expected);
+	mu_assert(message_d(0, errno), errno == 0);
+	mu_assert(message_hhu(expected, n), n == expected);
 	return 0;
 }
 
 static char* test_parse_ubyte_fail(const char *str, int expected) {
 	uint8_t n = 0;
 	mu_assert("Error: expected: <false> but was: <true>", !parse_ubyte(str, &n));
-	sprintf(msg, "Error: expected: <%d> but was: <%d>", expected, errno);
-	mu_assert(msg, errno == expected);
+	mu_assert(message_d(expected, errno), errno == expected);
 	return 0;
 }
 
@@ -63,54 +87,45 @@ static char* test_parse_ubyte_11() {return test_parse_ubyte_fail("256", ERANGE);
 static char* test_parse_ushort() {
 	uint16_t n = 0;
 	mu_assert("Error: expected: <true> but was: <false>", parse_ushort("65535", &n));
-	sprintf(msg, "Error: expected: <%d> but was: <%d>", 0, errno);
-	mu_assert(msg, errno == 0);
-	sprintf(msg, "Error: expected: <%hu> but was: <%hu>", 65535U, n);
-	mu_assert(msg, n == 65535U);
+	mu_assert(message_d(0, errno), errno == 0);
+	mu_assert(message_us(65535U, n), n == 65535U);
 	return 0;
 }
 
 static char* test_parse_ushort_fail() {
 	uint16_t n = 0;
 	mu_assert("Error: expected: <false> but was: <true>", !parse_ushort("65536", &n));
-	sprintf(msg, "Error: expected: <%d> but was: <%d>", ERANGE, errno);
-	mu_assert(msg, errno == ERANGE);
+	mu_assert(message_d(ERANGE, errno), errno == ERANGE);
 	return 0;
 }
 
 static char* test_parse_uint() {
 	uint32_t n = 0;
 	mu_assert("Error: expected: <true> but was: <false>", parse_uint("4294967295", &n));
-	sprintf(msg, "Error: expected: <%d> but was: <%d>", 0, errno);
-	mu_assert(msg, errno == 0);
-	sprintf(msg, "Error: expected: <%u> but was: <%u>", 4294967295U, n);
-	mu_assert(msg, n == 4294967295U);
+	mu_assert(message_d(0, errno), errno == 0);
+	mu_assert(message_u(4294967295U, n), n == 4294967295U);
 	return 0;
 }
 
 static char* test_parse_uint_fail() {
 	uint32_t n = 0;
 	mu_assert("Error: expected: <false> but was: <true>", !parse_uint("4294967296", &n));
-	sprintf(msg, "Error: expected: <%d> but was: <%d>", ERANGE, errno);
-	mu_assert(msg, errno == ERANGE);
+	mu_assert(message_d(ERANGE, errno), errno == ERANGE);
 	return 0;
 }
 
 static char* test_parse_ulong() {
 	size_t n = 0;
 	mu_assert("Error: expected: <true> but was: <false>", parse_ulong("18446744073709551615", &n));
-	sprintf(msg, "Error: expected: <%d> but was: <%d>", 0, errno);
-	mu_assert(msg, errno == 0);
-	sprintf(msg, "Error: expected: <%zu> but was: <%zu>", 18446744073709551615ULL, n);
-	mu_assert(msg, n == 18446744073709551615ULL);
+	mu_assert(message_d(0, errno), errno == 0);
+	mu_assert(message_zu(18446744073709551615ULL, n), n == 18446744073709551615ULL);
 	return 0;
 }
 
 static char* test_parse_ulong_fail() {
 	size_t n = 0;
 	mu_assert("Error: expected: <false> but was: <true>", !parse_ulong("18446744073709551616", &n));
-	sprintf(msg, "Error: expected: <%d> but was: <%d>", ERANGE, errno);
-	mu_assert(msg, errno == ERANGE);
+	mu_assert(message_d(ERANGE, errno), errno == ERANGE);
 	return 0;
 }
 

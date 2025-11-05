@@ -5,6 +5,8 @@
 #include "Pub.h"
 #include "Adult.h"
 
+const uint8_t ADULT_AGE = 20;
+
 struct __Pub {
 	size_t size;
 	Customer **customers;
@@ -14,7 +16,7 @@ static Customer* Pub_add_customer(Pub *self, uint8_t age) {
 	errno = 0;
 	size_t n = self->_pub->size;
 	self->_pub->customers = (Customer**) realloc(self->_pub->customers, sizeof(Customer*) * (n + 1));
-	self->_pub->customers[n] = (age < 20) ? new_Customer() : (Customer*) new_Adult();
+	self->_pub->customers[n] = (age < ADULT_AGE) ? new_Customer() : (Customer*) new_Adult();
 	if (self->_pub->customers[n] == NULL) return NULL;
 	self->_pub->size += 1;
 	return self->_pub->customers[n];

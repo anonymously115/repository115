@@ -7,10 +7,19 @@
 int tests_run = 0;
 char msg[] = "Error: expected: <18446744073709551615> but was: <18446744073709551616>";
 
+static char* message_u(uint32_t expected, uint32_t actual) {
+	sprintf(msg, "Error: expected: <%u> but was: <%u>", expected, actual);
+	return msg;
+}
+
+static char* message_zu(size_t expected, size_t actual) {
+	sprintf(msg, "Error: expected: <%zu> but was: <%zu>", expected, actual);
+	return msg;
+}
+
 static char* test_num_of_left_init() {
 	size_t actual = get_num_of_left();
-	sprintf(msg, "Error: expected: <%zu> but was: <%zu>", 0ULL, actual);
-	mu_assert(msg, actual == 0ULL);
+	mu_assert(message_zu(0ULL, actual), actual == 0ULL);
 	return 0;
 }
 
@@ -21,10 +30,8 @@ static char* test_constructor() {
 	uint32_t amount = customer->get_amount(customer);
 	del_Customer(&customer);
 	mu_assert("Error: expected: <null> but was: not <null>", !customer);
-	sprintf(msg, "Error: expected: <%zu> but was: <%zu>", sizeof(Customer), size);
-	mu_assert(msg, size == sizeof(Customer));
-	sprintf(msg, "Error: expected: <%u> but was: <%u>", 0U, (unsigned) amount);
-	mu_assert(msg, amount == 0U);
+	mu_assert(message_zu(sizeof(Customer), size), size == sizeof(Customer));
+	mu_assert(message_u(amount, 0U), amount == 0U);
 	return 0;
 }
 
@@ -35,8 +42,7 @@ static char* test_amount() {
 	customer->set_amount(customer, amount);
 	uint32_t actual = customer->get_amount(customer);
 	del_Customer(&customer);
-	sprintf(msg, "Error: expected: <%u> but was: <%u>", expected, actual);
-	mu_assert(msg, actual == expected);
+	mu_assert(message_u(expected, actual), actual == expected);
 	return 0;
 }
 
@@ -47,8 +53,7 @@ static char* test_take_food_init() {
 	customer->take_food(customer, price);
 	uint32_t actual = customer->get_amount(customer);
 	del_Customer(&customer);
-	sprintf(msg, "Error: expected: <%u> but was: <%u>", expected, actual);
-	mu_assert(msg, actual == expected);
+	mu_assert(message_u(expected, actual), actual == expected);
 	return 0;
 }
 
@@ -61,8 +66,7 @@ static char* test_take_food() {
 	customer->take_food(customer, price);
 	uint32_t actual = customer->get_amount(customer);
 	del_Customer(&customer);
-	sprintf(msg, "Error: expected: <%u> but was: <%u>", expected, actual);
-	mu_assert(msg, actual == expected);
+	mu_assert(message_u(expected, actual), actual == expected);
 	return 0;
 }
 
@@ -73,8 +77,7 @@ static char* test_take_softdrink_init() {
 	customer->take_softdrink(customer, price);
 	uint32_t actual = customer->get_amount(customer);
 	del_Customer(&customer);
-	sprintf(msg, "Error: expected: <%u> but was: <%u>", expected, actual);
-	mu_assert(msg, actual == expected);
+	mu_assert(message_u(expected, actual), actual == expected);
 	return 0;
 }
 
@@ -87,8 +90,7 @@ static char* test_take_softdrink() {
 	customer->take_softdrink(customer, price);
 	uint32_t actual = customer->get_amount(customer);
 	del_Customer(&customer);
-	sprintf(msg, "Error: expected: <%u> but was: <%u>", expected, actual);
-	mu_assert(msg, actual == expected);
+	mu_assert(message_u(expected, actual), actual == expected);
 	return 0;
 }
 
@@ -97,8 +99,7 @@ static char* test_take_alcohol_init() {
 	customer->take_alcohol(customer, (uint32_t) (300 + rand() % 4701));
 	uint32_t actual = customer->get_amount(customer);
 	del_Customer(&customer);
-	sprintf(msg, "Error: expected: <%u> but was: <%u>", 0U, actual);
-	mu_assert(msg, actual == 0U);
+	mu_assert(message_u(0U, actual), actual == 0U);
 	return 0;
 }
 
@@ -110,8 +111,7 @@ static char* test_take_alcohol() {
 	customer->take_alcohol(customer, (uint32_t) (300 + rand() % 4701));
 	uint32_t actual = customer->get_amount(customer);
 	del_Customer(&customer);
-	sprintf(msg, "Error: expected: <%u> but was: <%u>", expected, actual);
-	mu_assert(msg, actual == expected);
+	mu_assert(message_u(expected, actual), actual == expected);
 	return 0;
 }
 
@@ -120,8 +120,7 @@ static char* test_take_beer_init() {
 	customer->take_beer(customer);
 	uint32_t actual = customer->get_amount(customer);
 	del_Customer(&customer);
-	sprintf(msg, "Error: expected: <%u> but was: <%u>", 0U, actual);
-	mu_assert(msg, actual == 0U);
+	mu_assert(message_u(0U, actual), actual == 0U);
 	return 0;
 }
 
@@ -133,8 +132,7 @@ static char* test_take_beer() {
 	customer->take_beer(customer);
 	uint32_t actual = customer->get_amount(customer);
 	del_Customer(&customer);
-	sprintf(msg, "Error: expected: <%d> but was: <%d>", expected, actual);
-	mu_assert(msg, actual == expected);
+	mu_assert(message_u(expected, actual), actual == expected);
 	return 0;
 }
 
@@ -144,15 +142,13 @@ static char* test_accounting() {
 	customer->accounting(customer);
 	del_Customer(&customer);
 	size_t after = get_num_of_left();
-	sprintf(msg, "Error: expected: <%zu> but was: <%zu>", before + 1, after);
-	mu_assert(msg, after == before + 1);
+	mu_assert(message_zu(before + 1, after), after == before + 1);
 	return 0;
 }
 
 static char* test_num_of_left() {
 	size_t actual = get_num_of_left();
-	sprintf(msg, "Error: expected: <%zu> but was: <%zu>", 1ULL, actual);
-	mu_assert(msg, actual == 1ULL);
+	mu_assert(message_zu(1ULL, actual), actual == 1ULL);
 	return 0;
 }
 
