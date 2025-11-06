@@ -73,13 +73,28 @@ static int test_err(size_t n, const char *lines[]) {
 }
 
 static char* test0() {
-	const char *lines[] = {"0 0"};
+	const char *lines[] = {""};
+	int e = test_err(sizeof(lines) / sizeof(lines[0]), lines);
+	mu_assert(message_d(ERANGE, e), e == EINVAL);
+	return 0;
+}
+
+static char* test1() {
+	const char *lines[] = { "0 0" };
 	int e = test_err(sizeof(lines) / sizeof(lines[0]), lines);
 	mu_assert(message_d(ERANGE, e), e == ERANGE);
 	return 0;
 }
 
-static char* test1() {
+static char* test2() {
+	const char *lines[] = { "1 1", "1", "1 0" };
+	size_t n = test(sizeof(lines) / sizeof(lines[0]), lines);
+	mu_assert(message_zu(1, n), n == 1);
+	mu_assert(message_s("0\n", result[0]), !strcmp(result[0], "0\n"));
+	return 0;
+}
+
+static char* test3() {
 	const char *lines[] = {
 		"3 21",
 		"19",
@@ -116,9 +131,31 @@ static char* test1() {
 	return 0;
 }
 
+static char* test4() {
+	char chars[2001][10] = { "1000 1000" };
+	for (size_t i = 0; i < 1000; i++) {
+		sprintf(chars[i + 1], "%zu", 1 + i % 100);
+		sprintf(chars[i + 1001], "%zu A", i + 1);
+	}
+	char *lines[2001];
+	for (size_t i = 0; i < 2001; i++) {
+		lines[i] = chars[i];
+	}
+	size_t n = test(sizeof(lines) / sizeof(lines[0]), (const char**) lines);
+	mu_assert(message_zu(1001, n), n == 1001);
+	for (size_t i = 0; i < 1000; i++) {
+		mu_assert(message_s("0\n", result[i]), !strcmp(result[i], "0\n"));
+	}
+	mu_assert(message_s("1000\n", result[1000]), !strcmp(result[1000], "1000\n"));
+	return 0;
+}
+
 static char* all_tests() {
 	mu_run_test(test0);
 	mu_run_test(test1);
+	mu_run_test(test2);
+	mu_run_test(test3);
+	mu_run_test(test4);
 	return 0;
 }
 
