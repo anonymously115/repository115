@@ -9,6 +9,8 @@ bool read_numbers(const char *str, size_t *n, uint16_t *k) {
 		return false;
 	}
 	errno = 0;
+	*n = 0;
+	*k = 0;
 	char s[strlen(str) + 1];
 	strcpy(s, str);
 	if (!parse_ulong(strtok(s, " "), n)) {
@@ -38,6 +40,7 @@ bool read_age(const char *str, uint8_t *a) {
 		return false;
 	}
 	errno = 0;
+	*a = 0;
 	if (!parse_ubyte(str, a)) {
 		return false;
 	}
@@ -54,6 +57,9 @@ bool read_query(const char *str, size_t *n, char *s, uint32_t *m) {
 		return false;
 	}
 	errno = 0;
+	*n = 0;
+	*s = '\0';
+	*m = 0;
 	char t[strlen(str) + 1];
 	strcpy(t, str);
 	if (!parse_ulong(strtok(t, " "), n)) {

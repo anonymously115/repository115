@@ -15,7 +15,18 @@ struct __Pub {
 static Customer* Pub_add_customer(Pub *self, uint8_t age) {
 	errno = 0;
 	size_t n = self->_pub->size;
-	self->_pub->customers = (Customer**) realloc(self->_pub->customers, sizeof(Customer*) * (n + 1));
+	Customer** tmp = (Customer**) realloc(self->_pub->customers, sizeof(Customer*) * (n + 1));
+	if (!tmp) {
+		while (n--) {
+			free(self->_pub->customers[n]);
+			self->_pub->customers[n] = NULL;
+		}
+		self->_pub->size = 0;
+		free(self->_pub->customers);
+		self->_pub->customers = NULL;
+		return NULL;
+	}
+	self->_pub->customers = tmp;
 	self->_pub->customers[n] = (age < ADULT_AGE) ? new_Customer() : (Customer*) new_Adult();
 	if (self->_pub->customers[n] == NULL) return NULL;
 	self->_pub->size += 1;
