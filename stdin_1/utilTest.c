@@ -84,13 +84,13 @@ static char* test_parse_int_3() {return test_parse_int("9", 9);}
 static char* test_parse_int_4() {return test_parse_int_invalid(".");}
 static char* test_parse_int_5() {return test_parse_int("10", 10);}
 static char* test_parse_int_6() {return test_parse_int("99", 99);}
-static char* test_parse_int_7() {return test_parse_int_invalid(".0");}
-static char* test_parse_int_8() {return test_parse_int_invalid("0.");}
+static char* test_parse_int_7() {return test_parse_int_invalid(".9");}
+static char* test_parse_int_8() {return test_parse_int_invalid("9.");}
 static char* test_parse_int_9() {return test_parse_int("100", 100);}
 static char* test_parse_int_10() {return test_parse_int("999", 999);}
-static char* test_parse_int_11() {return test_parse_int_invalid(".00");}
-static char* test_parse_int_12() {return test_parse_int_invalid("0.0");}
-static char* test_parse_int_13() {return test_parse_int_invalid("00.");}
+static char* test_parse_int_11() {return test_parse_int_invalid(".99");}
+static char* test_parse_int_12() {return test_parse_int_invalid("9.9");}
+static char* test_parse_int_13() {return test_parse_int_invalid("99.");}
 static char* test_parse_int_14() {return test_parse_int_invalid("00");}
 static char* test_parse_int_15() {return test_parse_int_invalid("-");}
 static char* test_parse_int_16() {return test_parse_int_invalid("-0");}
