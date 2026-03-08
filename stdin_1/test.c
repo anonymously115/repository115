@@ -85,24 +85,16 @@ static char* test0() {
 
 static char* test1() {
 	char s[64] = { };
-	char t[64] = { };
 	size_t i = 0;
-	for (char c = '0'; c <= '9'; c++) {
-		s[i] = c;
-		t[i] = c;
-		i++;
-	}
-	for (char c = 'A'; c <= 'Z'; c++) {
-		s[i] = c;
-		t[i] = c;
-		i++;
-	}
-	for (char c = 'a'; c <= 'z'; c++) {
-		s[i] = c;
-		t[i] = c;
-		i++;
-	}
-	t[i++] = '\n';
+	for (char c = '0'; c <= '9'; c++)
+		s[i++] = c;
+	for (char c = 'A'; c <= 'Z'; c++)
+		s[i++] = c;
+	for (char c = 'a'; c <= 'z'; c++)
+		s[i++] = c;
+	char t[64] = { };
+	strcpy(t, s);
+	strcat(t, "\n");
 	const char *lines[] = { s };
 	size_t n = test(sizeof(lines) / sizeof(lines[0]), lines);
 	mu_assert(message_zu(1, n), n == 1);
@@ -113,9 +105,8 @@ static char* test1() {
 static char* test2() {
 	char s[4][128] = { };
 	size_t i = 0;
-	for (char c = 0x20; c < 0x7F; c++) {
+	for (char c = 0x20; c < 0x7F; c++)
 		s[1][i++] = c;
-	}
 	memset(s[2], '0', 101);
 	memset(s[3], '0', 100);
 	const char *lines[] = { s[0], s[1], s[2], s[3] };
