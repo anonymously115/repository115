@@ -20,15 +20,21 @@ static char* message_zu(size_t expected, size_t actual) {
 }
 
 static char* message_s(const char *expected, const char *actual) {
-	static char msg[72];
+	static char msg[256];
 	snprintf(msg, sizeof(msg), "Error: expected: <%s> but was: <%s>", expected, actual);
+	return msg;
+}
+
+static char* message_d(int expected, int actual) {
+	static char msg[72];
+	snprintf(msg, sizeof(msg), "Error: expected: <%d> but was: <%d>", expected, actual);
 	return msg;
 }
 
 static size_t test(size_t n, const char *lines[]) {
 	FILE *file;
 	if (!(file = fopen(IN_FILE, "w"))) {
-		fprintf(stderr, "%s\n", strerror(errno));
+		perror(NULL);
 		exit(errno);
 	}
 	for (size_t i = 0; i < n; i++) {
@@ -36,15 +42,15 @@ static size_t test(size_t n, const char *lines[]) {
 		fputc('\n', file);
 	}
 	fclose(file);
-	clock_t start = clock();
+	clock_t clockt = clock();
 	if (!!(errno = system(".\\" SOURCE " <" IN_FILE " 1>" OUT_FILE " 2>" ERR_FILE))) {
-		fprintf(stderr, "%s\n", strerror(errno));
+		perror(NULL);
 		exit(errno);
 	}
-	fprintf(stderr, "#%d %f sec\n", tests_run, (float) (clock() - start) / CLOCKS_PER_SEC);
+	fprintf(stderr, "#%d %f sec\n", tests_run, (float) (clock() - clockt) / CLOCKS_PER_SEC);
 	fflush(stderr);
 	if (!(file = fopen(OUT_FILE, "r"))) {
-		fprintf(stderr, "%s\n", strerror(errno));
+		perror(NULL);
 		exit(errno);
 	}
 	size_t m = 0;
@@ -53,7 +59,58 @@ static size_t test(size_t n, const char *lines[]) {
 	return m;
 }
 
+static int test_err(size_t n, const char *lines[]) {
+	FILE *file;
+	if (!(file = fopen(IN_FILE, "w"))) {
+		perror(NULL);
+		exit(errno);
+	}
+	for (size_t i = 0; i < n; i++) {
+		fputs(lines[i], file);
+		fputc('\n', file);
+	}
+	fclose(file);
+	clock_t clockt = clock();
+	int e = system(".\\" SOURCE " <" IN_FILE " 1>" OUT_FILE " 2>" ERR_FILE);
+	fprintf(stderr, "#%d %f sec\n", tests_run, (float) (clock() - clockt) / CLOCKS_PER_SEC);
+	fflush(stderr);
+	return e;
+}
+
 static char* test0() {
+	int e = test_err(0, NULL);
+	mu_assert(message_d(EXIT_FAILURE, e), e == EXIT_FAILURE);
+	return 0;
+}
+
+static char* test1() {
+	char s[64] = { };
+	char t[64] = { };
+	size_t i = 0;
+	for (char c = '0'; c <= '9'; c++) {
+		s[i] = c;
+		t[i] = c;
+		i++;
+	}
+	for (char c = 'A'; c <= 'Z'; c++) {
+		s[i] = c;
+		t[i] = c;
+		i++;
+	}
+	for (char c = 'a'; c <= 'z'; c++) {
+		s[i] = c;
+		t[i] = c;
+		i++;
+	}
+	t[i++] = '\n';
+	const char *lines[] = { s };
+	size_t n = test(sizeof(lines) / sizeof(lines[0]), lines);
+	mu_assert(message_zu(1, n), n == 1);
+	mu_assert(message_s(t, result[0]), !strcmp(result[0], t));
+	return 0;
+}
+
+static char* test2() {
 	char s[4][128] = { };
 	size_t i = 0;
 	for (char c = 0x20; c < 0x7F; c++) {
@@ -73,6 +130,8 @@ static char* test0() {
 
 static char* all_tests() {
 	mu_run_test(test0);
+	mu_run_test(test1);
+	mu_run_test(test2);
 	return 0;
 }
 

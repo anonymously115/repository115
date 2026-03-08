@@ -24,7 +24,9 @@ int main(int argc, char *argv[]) {
 		do {
 			errno = 0;
 			char s[102];
-			fgets(s, sizeof(s), stdin);
+			if (!fgets(s, sizeof(s), stdin)) {
+				return EXIT_FAILURE;
+			}
 			if (!strchr(s, '\n')) {
 				for (int c = getchar(); !strchr(END, c); c = getchar());
 				errno = EINVAL;
@@ -41,5 +43,5 @@ int main(int argc, char *argv[]) {
 #ifndef NDEBUG
 	PRINT("%f sec.\n", (float) (clock() - clockt) / CLOCKS_PER_SEC);
 #endif
-	return 0;
+	return EXIT_SUCCESS;
 }
