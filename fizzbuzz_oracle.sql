@@ -1,7 +1,4 @@
-CREATE TABLE temporary(
-    id INTEGER PRIMARY KEY,
-    name VARCHAR2(8)
-);
+CREATE TABLE temporary(id INTEGER PRIMARY KEY, name VARCHAR2(8));
 
 SET
     SERVEROUTPUT ON;
