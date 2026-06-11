@@ -9,7 +9,7 @@ DESC t;
 SELECT * FROM all_tab_columns WHERE owner = 'OWNER' AND table_name = 'TABLE_NAME' ORDER BY column_id;;
 
 -- SHOW CREATE TABLE emp;
-DBMS_METADATA.GET_DDL('TABLE', 'EMP');
+SELECT DBMS_METADATA.GET_DDL('TABLE', 'EMP') FROM dual;
 
 -- SHOW INDEX FROM t;
 SELECT * FROM user_indexes;
