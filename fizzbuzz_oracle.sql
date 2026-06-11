@@ -1,7 +1,5 @@
 CREATE TABLE temporary(id INTEGER PRIMARY KEY, name VARCHAR2(8));
-SET SERVEROUTPUT ON;
 BEGIN
-    DBMS_OUTPUT.PUT_LINE('hello, world');
     FOR i IN 1..100 LOOP
         IF MOD(i, 15) = 0
             THEN INSERT INTO temporary(id, name) VALUES (i, 'FizzBuzz');
@@ -14,6 +12,21 @@ BEGIN
     END LOOP;
 END;
 /
-SET SERVEROUTPUT OFF;
 SELECT * FROM temporary;
+SET SERVEROUTPUT ON;
+DECLARE
+    CURSOR c IS SELECT * FROM temporary;
+    r c%ROWTYPE;
+BEGIN
+    IF NOT c%ISOPEN THEN
+        OPEN c;
+    END IF;
+    LOOP
+        FETCH c INTO r;
+        EXIT WHEN c%NOTFOUND;
+        DBMS_OUTPUT.PUT_LINE(r.id || ': ' || r.name);
+    END LOOP;
+END;
+/
+SET SERVEROUTPUT OFF;
 DROP TABLE temporary;
