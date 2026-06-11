@@ -7,15 +7,15 @@ BEGIN
             THEN INSERT INTO temporary(id, name) VALUES (i, 'Fizz');
         ELSIF MOD(i, 5) = 0
             THEN INSERT INTO temporary(id, name) VALUES (i, 'Buzz');
-        ELSE INSERT INTO temporary(id, name) VALUES (i, i);
+        ELSE INSERT INTO temporary(id, name) VALUES (i, TO_CHAR(i));
         END IF;
     END LOOP;
 END;
 /
-SELECT * FROM temporary;
+SELECT * FROM temporary ORDER BY id;
 SET SERVEROUTPUT ON;
 DECLARE
-    CURSOR c IS SELECT * FROM temporary;
+    CURSOR c IS SELECT * FROM temporary ORDER BY id;
     r c%ROWTYPE;
 BEGIN
     IF NOT c%ISOPEN THEN
@@ -26,6 +26,7 @@ BEGIN
         EXIT WHEN c%NOTFOUND;
         DBMS_OUTPUT.PUT_LINE(r.id || ': ' || r.name);
     END LOOP;
+    CLOSE c;
 END;
 /
 SET SERVEROUTPUT OFF;
