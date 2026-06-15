@@ -14,3 +14,9 @@ SELECT DBMS_METADATA.GET_DDL('TABLE', 'EMP') FROM dual;
 -- SHOW INDEX FROM t;
 SELECT * FROM user_indexes;
 SELCT * FROM user_ind_columns;
+
+-- to_csv
+SET MARKUP CSV ON
+SPOOL result.csv
+SELECT * FROM employees;
+SPOOL OFF
